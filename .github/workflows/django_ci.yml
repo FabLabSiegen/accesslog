@@ -17,11 +17,11 @@ jobs:
 
 
     services:
-      postgres:
+      db:
         image: postgres:10.8
         env:
-          POSTGRES_USER: fablabdev
-          POSTGRES_PASSWORD: fablabdev
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
           POSTGRES_DB: postgres
         ports:
           - 5432:5432
