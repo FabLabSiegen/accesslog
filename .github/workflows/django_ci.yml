@@ -17,7 +17,7 @@ jobs:
 
 
     services:
-      db:
+      postgres:
         image: postgres:10.8
         env:
           POSTGRES_USER: postgres
