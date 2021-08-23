@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from usermanagement import views as v
+from utilities import views as v
 from rest import views as r
 
 #rest api
@@ -28,7 +28,7 @@ router.register(r'groups', r.GroupViewSet)
 #url routing
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('register/', v.register, name="usermanagement"),
+    path('register/', v.register, name="utilities"),
     path('', include('utilities.urls')),
     path('', include("django.contrib.auth.urls")),
     path('rest/', include(router.urls)),

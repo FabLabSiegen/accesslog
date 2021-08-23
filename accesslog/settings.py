@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'utilities.apps.MainConfig',
-    'usermanagement.apps.RegisterConfig',
     'print.apps.HistoryConfig',
     'rest.apps.RestConfig',
 ]
@@ -90,7 +89,7 @@ DATABASES = {
         'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': 'localhost',
+        'HOST': 'db',
         'PORT': 5432,
     }
 }
