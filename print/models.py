@@ -24,9 +24,15 @@ class MachineCategory(models.Model):
     name = models.TextField()
 
 class Machine(models.Model):
-    category = models.ForeignKey(MachineCategory, on_delete=models.CASCADE)
+    category = models.ForeignKey(MachineCategory, on_delete=models.SET_NULL)
     status = models.TextField()
     name = models.TextField()
     host_name = models.TextField()
     location = models.TextField()
     description = models.TextField()
+
+class Model(models.Model):
+    file = models.FilePathField()
+    owner = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL)
+    uploaded = models.DateTimeField()
+    previous = models.IntegerField()
