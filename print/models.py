@@ -11,13 +11,14 @@ class FabLabUser(models.Model):
     email = models.TextField(max_length=200)
     rfid_uuid = models.IntegerField()
     can_brief = models.BooleanField()
-    safety_briefings = models.ManyToManyField(SafetyBriefing, through='UserIsBriefed',)
+    safety_briefings = models.ManyToManyField(SafetyBriefing, through='UserIsBriefed', through_fields=('recipient','safety_briefing'))
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 class UserIsBriefed(models.Model):
-    recipient = models.ForeignKey(FabLabUser, on_delete=models.CASCADE)
-    safety_briefings = models.ForeignKey(SafetyBriefing, on_delete=models.CASCADE)
+    recipient = models.ForeignKey(FabLabUser, related_name='recipient', on_delete=models.CASCADE)
+    safety_briefing = models.ForeignKey(SafetyBriefing, on_delete=models.CASCADE)
     date = models.DateTimeField()
-    instructor_id = models.IntegerField()
+    instructor = models.ForeignKey(FabLabUser, related_name='instructor', on_delete=models.CASCADE, default=None)
 
-
+class MachineCategory(models.Model):
+    name = models.TextField()
