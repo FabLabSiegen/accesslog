@@ -35,4 +35,4 @@ class Model(models.Model):
     file = models.FilePathField()
     owner = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL, null=True)
     uploaded = models.DateTimeField()
-    previous = models.IntegerField()
+    previous = models.ForeignKey("self", on_delete=models.SET_NULL, default=None, null=True)
