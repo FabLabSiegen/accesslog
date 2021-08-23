@@ -24,7 +24,7 @@ class MachineCategory(models.Model):
     name = models.TextField()
 
 class Machine(models.Model):
-    category = models.ForeignKey(MachineCategory, on_delete=models.SET_NULL)
+    category = models.ForeignKey(MachineCategory, on_delete=models.SET_NULL, null=True)
     status = models.TextField()
     name = models.TextField()
     host_name = models.TextField()
@@ -33,6 +33,6 @@ class Machine(models.Model):
 
 class Model(models.Model):
     file = models.FilePathField()
-    owner = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL)
+    owner = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL, null=True)
     uploaded = models.DateTimeField()
     previous = models.IntegerField()
