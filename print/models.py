@@ -45,3 +45,10 @@ class GcodeModel(models.Model):
     used_filament_in_mm = models.FloatField()
     uploaded = models.DateTimeField()
 
+class PrintJob(models.Model):
+    user = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL, null=True)
+    machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
+    gcode = models.ForeignKey(GcodeModel, on_delete=models.SET_NULL, null=True)
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+    state = models.IntegerField()
