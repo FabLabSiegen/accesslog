@@ -36,3 +36,12 @@ class Model(models.Model):
     owner = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL, null=True)
     uploaded = models.DateTimeField()
     previous = models.ForeignKey("self", on_delete=models.SET_NULL, default=None, null=True)
+
+class GcodeModel(models.Model):
+    model = models.ForeignKey(Model, on_delete=models.CASCADE)
+    file_location = models.FilePathField()
+    estimated_printing_time = models.TimeField()
+    used_filament_in_g = models.FloatField()
+    used_filament_in_mm = models.FloatField()
+    uploaded = models.DateTimeField()
+
