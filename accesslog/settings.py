@@ -92,7 +92,7 @@ if sys.argv[1] == 'test':
             'NAME': 'postgres',
             'USER': 'postgres',
             'PASSWORD': 'postgres',
-            'HOST': 'localhost',
+            'HOST': 'db',
             'PORT': 5432,
         }
     }
@@ -103,7 +103,7 @@ else:
             'NAME': 'postgres',
             'USER': 'postgres',
             'PASSWORD': 'postgres',
-            'HOST': 'db',
+            'HOST': 'localhost',
             'PORT': 5432,
         }
     }
