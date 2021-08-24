@@ -37,7 +37,7 @@ class Model(models.Model):
     uploaded = models.DateTimeField()
     previous = models.ForeignKey("self", on_delete=models.SET_NULL, default=None, null=True)
 
-class GcodeModel(models.Model):
+class GCode(models.Model):
     model = models.ForeignKey(Model, on_delete=models.CASCADE)
     file_location = models.FilePathField()
     estimated_printing_time = models.TimeField()
@@ -48,7 +48,16 @@ class GcodeModel(models.Model):
 class PrintJob(models.Model):
     user = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL, null=True)
     machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
-    gcode = models.ForeignKey(GcodeModel, on_delete=models.SET_NULL, null=True)
+    g_code = models.ForeignKey(GCode, on_delete=models.SET_NULL, null=True)
     start = models.DateTimeField()
     end = models.DateTimeField()
     state = models.IntegerField()
+
+class PrintTemperatureHistory(models.Model):
+    print_job = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
+    tool_target = models.FloatField()
+    tool_actual = models.FloatField()
+    bed_target = models.FloatField()
+    bed_actual = models.FloatField()
+    timestamp = models.DateTimeField()
+
