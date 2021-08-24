@@ -70,3 +70,9 @@ class SlicingConfig(models.Model):
     g_code = models.ForeignKey(GCode,on_delete=models.CASCADE)
     parameter_1 = models.IntegerField()
     parameter_n = models.IntegerField()
+
+class Rating(models.Model):
+    user = models.ForeignKey(FabLabUser, on_delete=models.CASCADE)
+    print_job = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
+    comment = models.TextField(max_length=500)
+    rating = models.IntegerField()
