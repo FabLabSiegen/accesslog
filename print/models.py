@@ -65,3 +65,8 @@ class PrintMediaFile(models.Model):
     print_job = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
     file_location = models.FilePathField()
     description = models.TextField()
+
+class SlicingConfig(models.Model):
+    g_code = models.ForeignKey(GCode,on_delete=models.CASCADE)
+    parameter_1 = models.IntegerField()
+    parameter_n = models.IntegerField()
