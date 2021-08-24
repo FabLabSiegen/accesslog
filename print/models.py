@@ -30,12 +30,18 @@ class Machine(models.Model):
     host_name = models.TextField()
     location = models.TextField()
     description = models.TextField()
+    user = models.ManyToManyField(FabLabUser, through='AssignedUsers')
+
+class AssignedUsers(models.Model):
+    user = models.ForeignKey(FabLabUser, on_delete=models.CASCADE)
+    machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
 
 class Model(models.Model):
     file = models.FilePathField()
-    owner = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL, null=True)
+    owner = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL, null=True, related_name='owner')
     uploaded = models.DateTimeField()
     previous = models.ForeignKey("self", on_delete=models.SET_NULL, default=None, null=True)
+    shared_by_user = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL, null=True, related_name='shared_by_user')
 
 class GCode(models.Model):
     model = models.ForeignKey(Model, on_delete=models.CASCADE)
@@ -44,6 +50,7 @@ class GCode(models.Model):
     used_filament_in_g = models.FloatField()
     used_filament_in_mm = models.FloatField()
     uploaded = models.DateTimeField()
+    shared_by_user = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL, null=True)
 
 class PrintJob(models.Model):
     user = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL, null=True)
