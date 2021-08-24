@@ -61,3 +61,7 @@ class PrintTemperatureHistory(models.Model):
     bed_actual = models.FloatField()
     timestamp = models.DateTimeField()
 
+class PrintMediaFile(models.Model):
+    print_job = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
+    file_location = models.FilePathField()
+    description = models.TextField()
