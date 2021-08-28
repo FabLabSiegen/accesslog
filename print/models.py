@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+def get_sentinel_user():
+    return get_user_model().objects.get_or_create(username='deleted')[0]
 
 class SafetyBriefing(models.Model):
     Kind = models.TextField(max_length=500)
@@ -18,7 +22,7 @@ class UserIsBriefed(models.Model):
     Recipient = models.ForeignKey(FabLabUser, related_name='Recipient', on_delete=models.CASCADE)
     SafetyBriefing = models.ForeignKey(SafetyBriefing, on_delete=models.CASCADE)
     Date = models.DateTimeField()
-    Instructor = models.ForeignKey(FabLabUser, related_name='Instructor', on_delete=models.CASCADE, default=None)
+    Instructor = models.ForeignKey(User, related_name='Instructor', on_delete=models.SET(get_sentinel_user), default=None)
 
 class MachineCategory(models.Model):
     Name = models.TextField()
@@ -30,18 +34,18 @@ class Machine(models.Model):
     HostName = models.TextField()
     Location = models.TextField()
     Description = models.TextField()
-    User = models.ManyToManyField(FabLabUser, through='AssignedUsers')
+    User = models.ManyToManyField(User, through='AssignedUsers')
 
 class AssignedUsers(models.Model):
-    User = models.ForeignKey(FabLabUser, on_delete=models.CASCADE)
+    User = models.ForeignKey(User, on_delete=models.CASCADE)
     Machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
 
 class ThreeDimensionalModel(models.Model):
     File = models.FilePathField()
-    Owner = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL, null=True, related_name='Owner')
+    Owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='Owner')
     Uploaded = models.DateTimeField()
     Previous = models.ForeignKey("self", on_delete=models.SET_NULL, default=None, null=True)
-    SharedWithUser = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL, null=True, related_name='SharedWithUser')
+    SharedWithUser = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='SharedWithUser')
 
 class GCode(models.Model):
     ThreeDimensionalModel = models.ForeignKey(ThreeDimensionalModel, on_delete=models.SET_NULL, null=True, default=None)
@@ -50,12 +54,12 @@ class GCode(models.Model):
     UsedFilamentInG = models.FloatField()
     UsedFilamentInMm = models.FloatField()
     Uploaded = models.DateTimeField()
-    SharedWithUser = models.ForeignKey(FabLabUser, on_delete=models.SET_NULL, null=True)
+    SharedWithUser = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
 class PrintJob(models.Model):
-    User = models.ForeignKey(FabLabUser, on_delete=models.CASCADE)
-    Machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
-    GCode = models.ForeignKey(GCode, on_delete=models.CASCADE)
+    User = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user))
+    Machine = models.ForeignKey(Machine, on_delete=models.SET_NULL, null=True)
+    GCode = models.ForeignKey(GCode, on_delete=models.SET_NULL, null=True)
     Start = models.DateTimeField()
     End = models.DateTimeField()
     State = models.IntegerField()
@@ -78,7 +82,7 @@ class SlicingConfig(models.Model):
     ConfigLocation = models.FilePathField()
 
 class Rating(models.Model):
-    User = models.ForeignKey(FabLabUser, on_delete=models.CASCADE)
+    User = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user))
     PrintJob = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
     Comment = models.TextField(max_length=500)
     Rating = models.IntegerField()
