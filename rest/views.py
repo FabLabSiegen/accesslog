@@ -1,9 +1,21 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
+from rest_framework.response import Response
 from rest_framework import permissions
-from rest.serializers import UserSerializer, GroupSerializer
-from print import *
+from rest.serializers import UserSerializer, GroupSerializer, UploadSerializer
+from print.models import *
 
+class UploadViewSet(viewsets.ViewSet):
+    serializer_class = UploadSerializer
+
+    def list(self, request):
+        return Response("GET API")
+
+    def create(self, request):
+        file_uploaded = request.FILES.get('file_uploaded')
+        content_type = file_uploaded.content_type
+        response = "POST API and you have uploaded a {} file".format(content_type)
+        return Response(response)
 
 class UserViewSet(viewsets.ModelViewSet):
     """

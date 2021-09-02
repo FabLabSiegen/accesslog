@@ -19,11 +19,13 @@ from django.urls import path, include
 from rest_framework import routers
 from utilities import views as v
 from rest import views as r
+from rest.views import UploadViewSet
 
 #rest api
 router = routers.DefaultRouter()
 router.register(r'users', r.UserViewSet)
 router.register(r'groups', r.GroupViewSet)
+router.register(r'upload', r.UploadViewSet, basename="upload")
 
 #url routing
 urlpatterns = [
