@@ -57,12 +57,12 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='print.fablabuser'),
         ),
         migrations.AlterField(
-            model_name='slicingconfig',
+            model_name='slicingconfigs',
             name='ConfigLocation',
             field=models.FilePathField(),
         ),
         migrations.AlterField(
-            model_name='slicingconfig',
+            model_name='slicingconfigs',
             name='GCode',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='print.gcode'),
         ),

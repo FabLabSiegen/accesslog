@@ -237,15 +237,15 @@ class Migration(migrations.Migration):
             name='user',
         ),
         migrations.RemoveField(
-            model_name='slicingconfig',
+            model_name='slicingconfigs',
             name='g_code',
         ),
         migrations.RemoveField(
-            model_name='slicingconfig',
+            model_name='slicingconfigs',
             name='parameter_1',
         ),
         migrations.RemoveField(
-            model_name='slicingconfig',
+            model_name='slicingconfigs',
             name='parameter_n',
         ),
         migrations.RemoveField(
@@ -307,12 +307,12 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(default='', on_delete=django.db.models.deletion.CASCADE, to='print.fablabuser'),
         ),
         migrations.AddField(
-            model_name='slicingconfig',
+            model_name='slicingconfigs',
             name='ConfigLocation',
             field=models.FilePathField(default=''),
         ),
         migrations.AddField(
-            model_name='slicingconfig',
+            model_name='slicingconfigs',
             name='GCode',
             field=models.ForeignKey(default='', on_delete=django.db.models.deletion.CASCADE, to='print.gcode'),
         ),
