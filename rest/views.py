@@ -16,9 +16,16 @@ class UploadModelViewSet(viewsets.ViewSet):
     def create(self, request):
         file_uploaded = request.FILES.get('file_uploaded')
         content_type = file_uploaded.content_type
-        default_storage.save('models/'+file_uploaded.name, file_uploaded)
-        response = "POST API and you have uploaded a {} file".format(content_type)
-        return Response(response)
+        if file_uploaded.name.endswith('.stl') or file_uploaded.name.endswith('.obj'):
+            print(request.user.id)
+            default_storage.save('models/'+file_uploaded.name, file_uploaded)
+            response = "POST API and you have uploaded a {} file".format(content_type)
+            return Response(response, status=200)
+        else:
+            print(file_uploaded.name)
+            response = "POST API does not accept {} files".format(content_type)
+            return Response(response, status=415)
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
