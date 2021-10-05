@@ -6,26 +6,33 @@ from rest_framework import permissions
 from rest.serializers import *
 from print.models import *
 
-class UploadModelViewSet(viewsets.ViewSet):
-    serializer_class = UploadModelSerializer
+class ThreeDimensionalModelViewSet(viewsets.ViewSet):
+    serializer_class = ThreeDimensionalModelSerializer
+    queryset = ThreeDimensionalModel.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request):
         return Response("GET API")
 
     def create(self, request):
-        file_uploaded = request.FILES.get('file_uploaded')
-        content_type = file_uploaded.content_type
-        if file_uploaded.name.endswith('.stl') or file_uploaded.name.endswith('.obj'):
-            print(request.user.id)
-            default_storage.save('models/'+file_uploaded.name, file_uploaded)
-            response = "POST API and you have uploaded a {} file".format(content_type)
-            return Response(response, status=200)
+        file = request.FILES.get('File')
+        content_type = file.content_type
+        serializer = ThreeDimensionalModelSerializer(data=request.data)
+        if serializer.is_valid():
+            if file.name.endswith('.stl') or file.name.endswith('.obj'):
+                serializer.save()
+                print(serializer.data)
+                print(request.user.id)
+                default_storage.save('models/'+file.name, file)
+                #### print(ThreeDimensionalModelSerializer.is_valid(self))
+                response = "POST API and you have uploaded a {} file".format(content_type)
+                return Response(response, status=200)
+            else:
+                print(file.name)
+                response = "POST API does not accept {} files".format(content_type)
+                return Response(response, status=415)
         else:
-            print(file_uploaded.name)
-            response = "POST API does not accept {} files".format(content_type)
-            return Response(response, status=415)
-
+            return Response(serializer.errors, status=400)
 
 class UserViewSet(viewsets.ModelViewSet):
     """
