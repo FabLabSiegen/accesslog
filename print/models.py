@@ -8,7 +8,7 @@ def get_sentinel_user():
 class SafetyBriefing(models.Model):
     Kind = models.TextField(max_length=500)
     ValidityPeriod = models.IntegerField()
-    Document = models.FileField()
+    Document = models.FileField(upload_to='safetybriefings')
 
 class FabLabUser(models.Model):
     Name = models.TextField(max_length=100)
@@ -49,7 +49,7 @@ class ThreeDimensionalModel(models.Model):
 
 class GCode(models.Model):
     ThreeDimensionalModel = models.ForeignKey(ThreeDimensionalModel, on_delete=models.SET_NULL, null=True, default=None)
-    FileLocation = models.FilePathField()
+    FileLocation = models.FileField(upload_to='gcode')
     EstimatedPrintingTime = models.TimeField()
     UsedFilamentInG = models.FloatField()
     UsedFilamentInMm = models.FloatField()
@@ -74,12 +74,12 @@ class PrintTemperatureHistory(models.Model):
 
 class PrintMediaFile(models.Model):
     PrintJob = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
-    FileLocation = models.FilePathField()
+    FileLocation = models.FileField(upload_to='printmedia')
     Description = models.TextField()
 
 class SlicingConfig(models.Model):
     GCode = models.ForeignKey(GCode,on_delete=models.CASCADE)
-    ConfigLocation = models.FilePathField()
+    ConfigLocation = models.FileField(upload_to='slicingconfigs')
 
 class Rating(models.Model):
     User = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user))
