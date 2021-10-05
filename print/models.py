@@ -41,7 +41,7 @@ class AssignedUsers(models.Model):
     Machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
 
 class ThreeDimensionalModel(models.Model):
-    File = models.FileField()
+    File = models.FileField(upload_to='models')
     Owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='Owner')
     Uploaded = models.DateTimeField()
     Previous = models.ForeignKey("self", on_delete=models.SET_NULL, default=None, null=True)

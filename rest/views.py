@@ -21,14 +21,9 @@ class ThreeDimensionalModelViewSet(viewsets.ViewSet):
         if serializer.is_valid():
             if file.name.endswith('.stl') or file.name.endswith('.obj'):
                 serializer.save()
-                print(serializer.data)
-                print(request.user.id)
-                default_storage.save('models/'+file.name, file)
-                #### print(ThreeDimensionalModelSerializer.is_valid(self))
                 response = "POST API and you have uploaded a {} file".format(content_type)
                 return Response(response, status=200)
             else:
-                print(file.name)
                 response = "POST API does not accept {} files".format(content_type)
                 return Response(response, status=415)
         else:
