@@ -32,6 +32,6 @@ urlpatterns = [
     path('register/', v.register, name="utilities"),
     path('', include('utilities.urls')),
     path('', include("django.contrib.auth.urls")),
-    path('rest/', include(router.urls)),
+    path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

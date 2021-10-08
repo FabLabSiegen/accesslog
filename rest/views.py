@@ -12,7 +12,9 @@ class ThreeDimensionalModelViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request):
-        return Response("GET API")
+        models = ThreeDimensionalModel.objects.all()
+        serializer = ThreeDimensionalModelSerializer(models, many=True)
+        return Response(serializer.data)
 
     def create(self, request):
         file = request.FILES.get('File')
