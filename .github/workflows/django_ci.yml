@@ -8,7 +8,15 @@ on:
 
 jobs:
   build:
-
+    env:
+      SECRET_KEY: 'django-insecure-+!ik96zts$xx9pe-dgc2mdvchx3v@0dq-*&d8j$s404w7@lu-@'
+      DJANGO_ALLOWED_HOSTS: localhost 127.0.0.1 [::1]
+      SQL_ENGINE: django.db.backends.postgresql
+      SQL_DATABASE: postgres
+      SQL_USER: postgres
+      SQL_PASSWORD: postgres
+      SQL_HOST: db
+      SQL_PORT: 5432
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
