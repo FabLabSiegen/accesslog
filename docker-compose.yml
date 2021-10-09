@@ -19,6 +19,7 @@ services:
       - djangonetwork
   db:
     image: postgres
+    restart: always
     volumes:
       - ./data/db:/var/lib/postgresql/data
     ports:

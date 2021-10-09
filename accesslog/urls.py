@@ -24,7 +24,7 @@ from rest import views as r
 router = routers.DefaultRouter()
 router.register(r'users', r.UserViewSet)
 router.register(r'groups', r.GroupViewSet)
-router.register(r'upload', r.ThreeDimensionalModelViewSet, basename="upload")
+router.register(r'models', r.ThreeDimensionalModelViewSet, basename="models")
 
 #url routing
 urlpatterns = [
