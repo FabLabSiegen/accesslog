@@ -11,14 +11,19 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-import os
 import environ
+import os
 
-env = environ.Env()
-environ.Env.read_env()
+
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
@@ -29,8 +34,6 @@ SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(env("DEBUG", default=0))
-
-ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(" ")
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
@@ -91,18 +94,27 @@ WSGI_APPLICATION = 'accesslog.wsgi.application'
 
 
 DATABASES = {
-    "default": {
-        "ENGINE": env("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": env("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
-        "USER": env("SQL_USER", "user"),
-        "PASSWORD": env("SQL_PASSWORD", "password"),
-        "HOST": env("SQL_HOST", "localhost"),
-        "PORT": env("SQL_PORT", "5432"),
-    }
+    # read os.environ['DATABASE_URL'] and raises
+    # ImproperlyConfigured exception if not found
+    #
+    # The db() method is an alias for db_url().
+    'default': env.db(),
+
+    # read os.environ['SQLITE_URL']
+    'extra': env.db_url(
+        'SQLITE_URL',
+        default='sqlite:////tmp/my-tmp-sqlite.db'
+    )
 }
 
+CACHES = {
+    # Read os.environ['CACHE_URL'] and raises
+    # ImproperlyConfigured exception if not found.
+    #
+    # The cache() method is an alias for cache_url().
+    'default': env.cache(),
 
-
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

@@ -1,6 +1,8 @@
-Django>=3.2.6,<4.0
+Django>=3.2.8
 psycopg2-binary==2.9.1
 djangorestframework>=3.12.4
 markdown>=3.3.4
 django-filter>=2.4.0
-django-environ
+django-environ>=0.7.0
+python-memcached
+django-redis
