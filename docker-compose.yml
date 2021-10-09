@@ -3,21 +3,16 @@ version: "3.9"
 services:
   db:
     image: postgres
-    restart: always
     volumes:
       - ./data/db:/var/lib/postgresql/data
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    networks:
-      - djangonetwork
   web:
     build: .
-    restart: always
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
@@ -27,12 +22,5 @@ services:
       - .env.dev
     depends_on:
       - db
-    links:
-      - db:db
-    networks:
-      - djangonetwork
-networks:
-  djangonetwork:
-    driver: bridge
 volumes:
   postgres_data:
