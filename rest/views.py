@@ -23,7 +23,7 @@ class ThreeDimensionalModelViewSet(viewsets.ViewSet):
         serializer = ThreeDimensionalModelSerializer(data=request.data)
         if serializer.is_valid():
             if file.name.endswith('.stl') or file.name.endswith('.obj'):
-                serializer.save()
+                serializer.save(Owner=self.request.user)
                 response = "POST API and you have uploaded a {} file".format(content_type)
                 return Response(response, status=200)
             else:

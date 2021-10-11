@@ -6,14 +6,14 @@ from print.models import *
 class ThreeDimensionalModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ThreeDimensionalModel
-        fields = ['File', 'Owner', 'Uploaded', 'Previous', 'SharedWithUser']
+        fields = ['File', 'Uploaded', 'Owner', 'Previous', 'SharedWithUser']
+        read_only_fields = ['Owner']
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    tdm = serializers.PrimaryKeyRelatedField(many=True, queryset=ThreeDimensionalModel.objects.all())
     class Meta:
         model = User
-        fields = ['url', 'username', 'email', 'groups', 'tdm']
+        fields = ['url', 'username', 'email', 'groups']
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
