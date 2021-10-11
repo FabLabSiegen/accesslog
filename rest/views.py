@@ -1,5 +1,3 @@
-from django.contrib.auth.models import User, Group
-from django.core.files.storage import default_storage
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import permissions
@@ -10,12 +8,13 @@ from django.db.models import Q
 class ThreeDimensionalModelViewSet(viewsets.ViewSet):
     serializer_class = ThreeDimensionalModelSerializer
     queryset = ThreeDimensionalModel.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
-    def list(self, request):
-        modelQuery = ThreeDimensionalModel.objects.filter(Q(Owner=request.user.id) | Q(SharedWithUser=request.user.id))
-        serializer = ThreeDimensionalModelSerializer(modelQuery, many=True)
-        print(request.user.id)
+    @staticmethod
+    def list(request):
+        # Filter out if models are shared or owned by requesting user
+        tdm = ThreeDimensionalModel.objects.filter(Q(Owner=request.user.id) | Q(SharedWithUser=request.user.id))
+        serializer = ThreeDimensionalModelSerializer(tdm, many=True)
         return Response(serializer.data)
 
     def create(self, request):
