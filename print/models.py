@@ -42,8 +42,8 @@ class AssignedUsers(models.Model):
 
 class ThreeDimensionalModel(models.Model):
     File = models.FileField(upload_to='models')
-    Owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='Owner')
-    Uploaded = models.DateTimeField()
+    Owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, related_name='Owner')
+    Uploaded = models.DateTimeField(auto_now_add=True)
     Previous = models.ForeignKey("self", on_delete=models.SET_NULL, default=None, null=True)
     SharedWithUser = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='SharedWithUser')
 

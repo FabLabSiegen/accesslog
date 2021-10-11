@@ -4,30 +4,16 @@ from rest_framework import serializers
 from print.models import *
 
 class ThreeDimensionalModelSerializer(serializers.ModelSerializer):
-    File = serializers.FileField()
     class Meta:
         model = ThreeDimensionalModel
         fields = ['File', 'Owner', 'Uploaded', 'Previous', 'SharedWithUser']
 
-    def create(self, validated_data):
-        model = ThreeDimensionalModel(
-            File=validated_data['File'],
-            Owner=validated_data['Owner'],
-            Uploaded=validated_data['Uploaded'],
-            Previous=validated_data['Previous'],
-            SharedWithUser=validated_data['SharedWithUser'],
-        )
-        model.save()
-        return model
-
-    def update(self, instance, validated_data):
-        instance.File = validated_data.get('File', instance.File)
-        instance.save()
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    tdm = serializers.PrimaryKeyRelatedField(many=True, queryset=ThreeDimensionalModel.objects.all())
     class Meta:
         model = User
-        fields = ['url', 'username', 'email', 'groups']
+        fields = ['url', 'username', 'email', 'groups', 'tdm']
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):

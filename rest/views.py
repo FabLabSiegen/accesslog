@@ -9,11 +9,12 @@ from print.models import *
 class ThreeDimensionalModelViewSet(viewsets.ViewSet):
     serializer_class = ThreeDimensionalModelSerializer
     queryset = ThreeDimensionalModel.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def list(self, request):
         models = ThreeDimensionalModel.objects.all()
         serializer = ThreeDimensionalModelSerializer(models, many=True)
+        print(request.user.id)
         return Response(serializer.data)
 
     def create(self, request):
