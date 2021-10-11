@@ -12,7 +12,7 @@ class ThreeDimensionalModelViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def list(self, request):
-        models = ThreeDimensionalModel.objects.all()
+        models = ThreeDimensionalModel.objects.filter(Owner=request.user.id)
         serializer = ThreeDimensionalModelSerializer(models, many=True)
         print(request.user.id)
         return Response(serializer.data)
