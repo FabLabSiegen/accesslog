@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from rest.serializers import *
 from print.models import *
+from django.db.models import Q
 
 class ThreeDimensionalModelViewSet(viewsets.ViewSet):
     serializer_class = ThreeDimensionalModelSerializer
@@ -12,8 +13,8 @@ class ThreeDimensionalModelViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def list(self, request):
-        models = ThreeDimensionalModel.objects.filter(Owner=request.user.id)
-        serializer = ThreeDimensionalModelSerializer(models, many=True)
+        modelQuery = ThreeDimensionalModel.objects.filter(Q(Owner=request.user.id) | Q(SharedWithUser=request.user.id))
+        serializer = ThreeDimensionalModelSerializer(modelQuery, many=True)
         print(request.user.id)
         return Response(serializer.data)
 
