@@ -13,18 +13,25 @@ class ThreeDimensionalModelViewSet(viewsets.ViewSet):
 
     @staticmethod
     def list(request):
-        # Filter out if models are shared or owned by requesting user
+
         id = request.query_params.get('id')
         name = request.query_params.get('name')
         if id is not None:
-            queryset = ThreeDimensionalModel.objects.get(id=id)
-            serializer = ThreeDimensionalModelSerializer(queryset)
-            return Response(serializer.data)
+            try:
+                queryset = ThreeDimensionalModel.objects.get(id=id)
+                serializer = ThreeDimensionalModelSerializer(queryset)
+                return Response(serializer.data,200)
+            except:
+                return Response(status=404)
         elif name is not None:
-            queryset = ThreeDimensionalModel.objects.get(Name=name)
-            serializer = ThreeDimensionalModelSerializer(queryset)
-            return Response(serializer.data)
+            try:
+                queryset = ThreeDimensionalModel.objects.filter(Name=name)
+                serializer = ThreeDimensionalModelSerializer(queryset, many=True)
+                return Response(serializer.data, 200)
+            except:
+                return Response(status=404)
         else:
+            # Filter out if models are shared or owned by requesting user
             queryset = ThreeDimensionalModel.objects.filter(Q(Owner=request.user.id) | Q(SharedWithUser=request.user.id))
             serializer = ThreeDimensionalModelSerializer(queryset, many=True)
             return Response(serializer.data)
