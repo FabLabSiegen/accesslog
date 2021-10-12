@@ -21,7 +21,7 @@ class ThreeDimensionalModelViewSet(viewsets.ViewSet):
             serializer = ThreeDimensionalModelSerializer(queryset)
             return Response(serializer.data)
         elif name is not None:
-            queryset = ThreeDimensionalModel.objects.get(File=name)
+            queryset = ThreeDimensionalModel.objects.get(Name=name)
             serializer = ThreeDimensionalModelSerializer(queryset)
             return Response(serializer.data)
         else:
@@ -31,16 +31,14 @@ class ThreeDimensionalModelViewSet(viewsets.ViewSet):
 
     def create(self, request):
         file = request.FILES.get('File')
-        content_type = file.content_type
         serializer = ThreeDimensionalModelSerializer(data=request.data)
         if serializer.is_valid():
             if file.name.endswith('.stl') or file.name.endswith('.obj'):
-                serializer.save(Owner=self.request.user)
-                response = "POST API and you have uploaded a {} file".format(content_type)
+                obj = serializer.save(Owner=self.request.user, Size=file.size)
+                response = {'id':obj.id}
                 return Response(response, status=200)
             else:
-                response = "POST API does not accept {} files".format(content_type)
-                return Response(response, status=415)
+                return Response(status=415)
         else:
             return Response(serializer.errors, status=400)
 
