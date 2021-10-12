@@ -4,6 +4,7 @@ from rest_framework import permissions
 from rest.serializers import *
 from print.models import *
 from django.db.models import Q
+from rest_framework.decorators import api_view
 
 class ThreeDimensionalModelViewSet(viewsets.ViewSet):
     serializer_class = ThreeDimensionalModelSerializer
@@ -13,9 +14,20 @@ class ThreeDimensionalModelViewSet(viewsets.ViewSet):
     @staticmethod
     def list(request):
         # Filter out if models are shared or owned by requesting user
-        tdm = ThreeDimensionalModel.objects.filter(Q(Owner=request.user.id) | Q(SharedWithUser=request.user.id))
-        serializer = ThreeDimensionalModelSerializer(tdm, many=True)
-        return Response(serializer.data)
+        id = request.query_params.get('id')
+        name = request.query_params.get('name')
+        if id is not None:
+            queryset = ThreeDimensionalModel.objects.filter(id=id)
+            serializer = ThreeDimensionalModelSerializer(queryset, many=True)
+            return Response(serializer.data)
+        elif name is not None:
+            queryset = ThreeDimensionalModel.objects.filter(File=name)
+            serializer = ThreeDimensionalModelSerializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            queryset = ThreeDimensionalModel.objects.filter(Q(Owner=request.user.id) | Q(SharedWithUser=request.user.id))
+            serializer = ThreeDimensionalModelSerializer(queryset, many=True)
+            return Response(serializer.data)
 
     def create(self, request):
         file = request.FILES.get('File')
@@ -31,6 +43,7 @@ class ThreeDimensionalModelViewSet(viewsets.ViewSet):
                 return Response(response, status=415)
         else:
             return Response(serializer.errors, status=400)
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """

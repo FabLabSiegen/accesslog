@@ -6,7 +6,7 @@ from print.models import *
 class ThreeDimensionalModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ThreeDimensionalModel
-        fields = ['File', 'Uploaded', 'Owner', 'Previous', 'SharedWithUser']
+        fields = ['id', 'File', 'Uploaded', 'Owner', 'Previous', 'SharedWithUser']
         read_only_fields = ['Owner']
 
 
