@@ -17,12 +17,12 @@ class ThreeDimensionalModelViewSet(viewsets.ViewSet):
         id = request.query_params.get('id')
         name = request.query_params.get('name')
         if id is not None:
-            queryset = ThreeDimensionalModel.objects.filter(id=id)
-            serializer = ThreeDimensionalModelSerializer(queryset, many=True)
+            queryset = ThreeDimensionalModel.objects.get(id=id)
+            serializer = ThreeDimensionalModelSerializer(queryset)
             return Response(serializer.data)
         elif name is not None:
-            queryset = ThreeDimensionalModel.objects.filter(File=name)
-            serializer = ThreeDimensionalModelSerializer(queryset, many=True)
+            queryset = ThreeDimensionalModel.objects.get(File=name)
+            serializer = ThreeDimensionalModelSerializer(queryset)
             return Response(serializer.data)
         else:
             queryset = ThreeDimensionalModel.objects.filter(Q(Owner=request.user.id) | Q(SharedWithUser=request.user.id))
