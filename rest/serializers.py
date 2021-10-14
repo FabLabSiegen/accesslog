@@ -7,7 +7,7 @@ class ThreeDimensionalModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ThreeDimensionalModel
         fields = ['id', 'Name' ,'Size','File', 'Uploaded', 'Owner', 'Previous', 'SharedWithUser']
-        read_only_fields = ['Owner', 'Size']
+        read_only_fields = ['Owner', 'Size', 'Name']
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
