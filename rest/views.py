@@ -4,14 +4,15 @@ from rest_framework import permissions
 from rest.serializers import *
 from print.models import *
 from django.db.models import Q
-from django.http import FileResponse
-from rest_framework import viewsets, renderers
-from rest_framework.decorators import action
+from rest_framework import viewsets
 
-class ThreeDimensionalModelViewSet(viewsets.ViewSet):
+class ThreeDimensionalModelViewSet(viewsets.ModelViewSet):
     serializer_class = ThreeDimensionalModelSerializer
     queryset = ThreeDimensionalModel.objects.all()
     permission_classes = [permissions.IsAuthenticated]
+
+    # Router class variables
+    lookup_field = 'id'
 
     @staticmethod
     def list(request):
@@ -52,34 +53,6 @@ class ThreeDimensionalModelViewSet(viewsets.ViewSet):
         else:
             response = {'message:':'Following serializer errors came up: ' + serializer.errors}
             return Response(response, status=400)
-
-class PassthroughRenderer(renderers.BaseRenderer):
-    """
-        Return data as-is. View should supply a Response.
-    """
-    media_type = ''
-    format = ''
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        return data
-
-class DownloadThreeDimensionalModelViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = ThreeDimensionalModelSerializer
-    queryset = ThreeDimensionalModel.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
-
-    @action(methods=['get'], detail=True, renderer_classes=(PassthroughRenderer,))
-    def download(self, *args, **kwargs):
-        instance = self.get_object()
-
-        # get an open file handle
-        file_handle = instance.file.open()
-
-        # send file
-        response = FileResponse(file_handle, content_type='whatever')
-        response['Content-Length'] = instance.file.size
-        response['Content-Disposition'] = 'attachment; filename="%s"' % instance.file.name
-
-        return response
 
 
 class UserViewSet(viewsets.ModelViewSet):

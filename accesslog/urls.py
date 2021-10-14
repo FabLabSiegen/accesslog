@@ -26,8 +26,7 @@ from django.conf.urls.static import static
 router = routers.DefaultRouter()
 router.register(r'users', r.UserViewSet)
 router.register(r'groups', r.GroupViewSet)
-router.register(r'models', r.ThreeDimensionalModelViewSet, basename="models")
-router.register(r'downloads/models', r.DownloadThreeDimensionalModelViewSet, basename="download")
+router.register(r'models', r.ThreeDimensionalModelViewSet, basename="ThreeDimensionalModel")
 
 #url routing
 urlpatterns = [
