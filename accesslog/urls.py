@@ -19,6 +19,8 @@ from django.urls import path, include
 from rest_framework import routers
 from utilities import views as v
 from rest import views as r
+from django.conf import settings
+from django.conf.urls.static import static
 
 #rest api
 router = routers.DefaultRouter()
@@ -35,4 +37,4 @@ urlpatterns = [
     path('', include("django.contrib.auth.urls")),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
