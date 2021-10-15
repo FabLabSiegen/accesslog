@@ -5,6 +5,7 @@ from rest.serializers import *
 from print.models import *
 from django.db.models import Q
 from rest_framework import viewsets
+import os
 
 class ThreeDimensionalModelViewSet(viewsets.ModelViewSet):
     serializer_class = ThreeDimensionalModelSerializer
@@ -44,7 +45,7 @@ class ThreeDimensionalModelViewSet(viewsets.ModelViewSet):
         serializer = ThreeDimensionalModelSerializer(data=request.data)
         if serializer.is_valid():
             if file.name.endswith('.stl') or file.name.endswith('.obj'):
-                obj = serializer.save(Owner=self.request.user, Size=file.size, Name=file.name)
+                obj = serializer.save(Owner=self.request.user, Size=file.size, FileName=file.name, Name=os.path.splitext(file.name)[0])
                 response = {'message:':'POST API and you have uploaded a {} file'.format(content_type), 'id':obj.id}
                 return Response(response, status=200)
             else:

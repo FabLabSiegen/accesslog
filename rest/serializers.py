@@ -6,9 +6,14 @@ from print.models import *
 class ThreeDimensionalModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ThreeDimensionalModel
-        fields = ['id', 'Name' ,'Size','File', 'Uploaded', 'Owner', 'Previous', 'SharedWithUser']
-        read_only_fields = ['Owner', 'Size', 'Name']
+        fields = ['id', 'Name' , 'FileName','Size','File', 'Uploaded', 'Owner', 'Previous', 'SharedWithUser']
+        read_only_fields = ['Owner', 'Size', 'Name', 'FileName']
 
+class GCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ThreeDimensionalModel
+        fields = ['id', 'Name' , 'FileName','Size','File', 'Uploaded', 'UsedFilamentInG', 'UsedFilamentInMm', 'SharedWithUser', 'EstimatedPrintingTime', 'ThreeDimensionalModel']
+        read_only_fields = ['Size', 'Name', 'FileName']
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

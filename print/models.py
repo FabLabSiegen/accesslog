@@ -42,6 +42,7 @@ class AssignedUsers(models.Model):
 
 class ThreeDimensionalModel(models.Model):
     Name = models.TextField()
+    FileName = models.TextField()
     Size = models.TextField()
     File = models.FileField(upload_to='models')
     Owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, related_name='Owner')
@@ -50,12 +51,15 @@ class ThreeDimensionalModel(models.Model):
     SharedWithUser = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='SharedWithUser')
 
 class GCode(models.Model):
+    Name = models.TextField()
+    FileName = models.TextField()
+    Size = models.TextField()
     ThreeDimensionalModel = models.ForeignKey(ThreeDimensionalModel, on_delete=models.SET_NULL, null=True, default=None)
-    FileLocation = models.FileField(upload_to='gcode')
+    File = models.FileField(upload_to='gcode')
     EstimatedPrintingTime = models.TimeField()
     UsedFilamentInG = models.FloatField()
     UsedFilamentInMm = models.FloatField()
-    Uploaded = models.DateTimeField()
+    Uploaded = models.DateTimeField(auto_now_add=True)
     SharedWithUser = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
 class PrintJob(models.Model):
