@@ -27,6 +27,7 @@ router = routers.DefaultRouter()
 router.register(r'users', r.UserViewSet)
 router.register(r'groups', r.GroupViewSet)
 router.register(r'models', r.ThreeDimensionalModelViewSet, basename="ThreeDimensionalModel")
+router.register(r'gcode', r.GCodeViewSet, basename="GCode")
 
 #url routing
 urlpatterns = [

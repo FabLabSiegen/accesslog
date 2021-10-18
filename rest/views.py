@@ -1,4 +1,3 @@
-from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest.serializers import *
@@ -52,7 +51,29 @@ class ThreeDimensionalModelViewSet(viewsets.ModelViewSet):
                 response = {'message:':'POST API does not accept {} files'.format(content_type)}
                 return Response(response, status=415)
         else:
-            response = {'message:':'Following serializer errors came up: ' + serializer.errors}
+            response = serializer.errors
+            return Response(response, status=400)
+
+
+class GCodeViewSet(viewsets.ModelViewSet):
+    serializer_class = GCodeSerializer
+    queryset = GCode.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request):
+        file = request.FILES.get('File')
+        content_type = file.content_type
+        serializer = GCodeSerializer(data=request.data)
+        if serializer.is_valid():
+            if file.name.endswith('.gcode'):
+                obj = serializer.save(Size=file.size, FileName=file.name, Name=os.path.splitext(file.name)[0])
+                response = {'message:':'POST API and you have uploaded a {} file'.format(content_type), 'id':obj.id}
+                return Response(response, status=200)
+            else:
+                response = {'message:':'POST API does not accept {} files'.format(content_type)}
+                return Response(response, status=415)
+        else:
+            response = serializer.errors
             return Response(response, status=400)
 
 
