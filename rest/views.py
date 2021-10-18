@@ -60,13 +60,40 @@ class GCodeViewSet(viewsets.ModelViewSet):
     queryset = GCode.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
+    # Router class variables
+    lookup_field = 'id'
+
+    @staticmethod
+    def list(request):
+        id = request.query_params.get('id')
+        name = request.query_params.get('name')
+        if id is not None:
+            try:
+                queryset = GCode.objects.get(id=id)
+                serializer = GCodeSerializer(queryset)
+                return Response(serializer.data,200)
+            except:
+                return Response(status=404)
+        elif name is not None:
+            try:
+                queryset = GCode.objects.filter(Name=name)
+                serializer = GCodeSerializer(queryset, many=True)
+                return Response(serializer.data, 200)
+            except:
+                return Response(status=404)
+        else:
+            # Filter out if models are shared or owned by requesting user
+            queryset = GCode.objects.filter(Q(Owner=request.user.id) | Q(SharedWithUser=request.user.id))
+            serializer = GCodeSerializer(queryset, many=True)
+            return Response(serializer.data)
+
     def create(self, request):
         file = request.FILES.get('File')
         content_type = file.content_type
         serializer = GCodeSerializer(data=request.data)
         if serializer.is_valid():
             if file.name.endswith('.gcode'):
-                obj = serializer.save(Size=file.size, FileName=file.name, Name=os.path.splitext(file.name)[0])
+                obj = serializer.save(Owner=self.request.user, Size=file.size, FileName=file.name, Name=os.path.splitext(file.name)[0])
                 response = {'message:':'POST API and you have uploaded a {} file'.format(content_type), 'id':obj.id}
                 return Response(response, status=200)
             else:

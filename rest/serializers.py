@@ -12,8 +12,8 @@ class ThreeDimensionalModelSerializer(serializers.ModelSerializer):
 class GCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = GCode
-        fields = ['id', 'Name' , 'FileName','Size','File', 'Uploaded', 'UsedFilamentInG', 'UsedFilamentInMm', 'SharedWithUser', 'EstimatedPrintingTime', 'ThreeDimensionalModel']
-        read_only_fields = ['Size', 'Name', 'FileName']
+        fields = ['id', 'Name' , 'FileName','Size','File', 'Uploaded', 'UsedFilamentInG','Owner', 'UsedFilamentInMm', 'SharedWithUser', 'EstimatedPrintingTime', 'ThreeDimensionalModel']
+        read_only_fields = ['Size', 'Name', 'FileName', 'Owner']
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
