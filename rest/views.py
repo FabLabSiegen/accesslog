@@ -18,23 +18,24 @@ class ThreeDimensionalModelViewSet(viewsets.ModelViewSet):
     def list(request):
         id = request.query_params.get('id')
         name = request.query_params.get('name')
+
+        # Filter out if models are shared or owned by requesting user
+        queryset = ThreeDimensionalModel.objects.filter(Q(Owner=request.user.id) | Q(SharedWithUser=request.user.id))
         if id is not None:
             try:
-                queryset = ThreeDimensionalModel.objects.get(id=id)
-                serializer = ThreeDimensionalModelSerializer(queryset)
+                id_queryset = queryset.get(id=id)
+                serializer = ThreeDimensionalModelSerializer(id_queryset)
                 return Response(serializer.data,200)
             except:
                 return Response(status=404)
         elif name is not None:
             try:
-                queryset = ThreeDimensionalModel.objects.filter(Name=name)
-                serializer = ThreeDimensionalModelSerializer(queryset, many=True)
+                name_queryset = queryset.filter(Name=name)
+                serializer = ThreeDimensionalModelSerializer(name_queryset, many=True)
                 return Response(serializer.data, 200)
             except:
                 return Response(status=404)
         else:
-            # Filter out if models are shared or owned by requesting user
-            queryset = ThreeDimensionalModel.objects.filter(Q(Owner=request.user.id) | Q(SharedWithUser=request.user.id))
             serializer = ThreeDimensionalModelSerializer(queryset, many=True)
             return Response(serializer.data)
 
@@ -67,23 +68,24 @@ class GCodeViewSet(viewsets.ModelViewSet):
     def list(request):
         id = request.query_params.get('id')
         name = request.query_params.get('name')
+
+        # Filter out if models are shared or owned by requesting user
+        queryset = GCode.objects.filter(Q(Owner=request.user.id) | Q(SharedWithUser=request.user.id))
         if id is not None:
             try:
-                queryset = GCode.objects.get(id=id)
-                serializer = GCodeSerializer(queryset)
+                id_queryset = queryset.get(id=id)
+                serializer = GCodeSerializer(id_queryset)
                 return Response(serializer.data,200)
             except:
                 return Response(status=404)
         elif name is not None:
             try:
-                queryset = GCode.objects.filter(Name=name)
-                serializer = GCodeSerializer(queryset, many=True)
+                name_queryset = queryset.filter(Name=name)
+                serializer = GCodeSerializer(name_queryset, many=True)
                 return Response(serializer.data, 200)
             except:
                 return Response(status=404)
         else:
-            # Filter out if models are shared or owned by requesting user
-            queryset = GCode.objects.filter(Q(Owner=request.user.id) | Q(SharedWithUser=request.user.id))
             serializer = GCodeSerializer(queryset, many=True)
             return Response(serializer.data)
 
