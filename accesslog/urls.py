@@ -28,6 +28,7 @@ router.register(r'users', r.UserViewSet)
 router.register(r'groups', r.GroupViewSet)
 router.register(r'models', r.ThreeDimensionalModelViewSet, basename="ThreeDimensionalModel")
 router.register(r'gcode', r.GCodeViewSet, basename="GCode")
+router.register(r'slicingconfig', r.SlicingConfigViewSet, basename="SlicingConfig")
 
 #url routing
 urlpatterns = [

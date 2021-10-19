@@ -86,7 +86,7 @@ class PrintMediaFile(models.Model):
 
 class SlicingConfig(models.Model):
     GCode = models.ForeignKey(GCode,on_delete=models.CASCADE)
-    ConfigLocation = models.FileField(upload_to='slicingconfigs')
+    Config = models.FileField(upload_to='slicingconfigs')
 
 class Rating(models.Model):
     User = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user))

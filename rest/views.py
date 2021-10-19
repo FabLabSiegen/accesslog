@@ -105,6 +105,12 @@ class GCodeViewSet(viewsets.ModelViewSet):
             response = serializer.errors
             return Response(response, status=400)
 
+class SlicingConfigViewSet(viewsets.ModelViewSet):
+    serializer_class = SlicingConfigSerializer
+    queryset = SlicingConfig.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    lookup_field = 'GCode'
 
 class UserViewSet(viewsets.ModelViewSet):
     """

@@ -15,6 +15,12 @@ class GCodeSerializer(serializers.ModelSerializer):
         fields = ['id', 'Name' , 'FileName','Size','File', 'Uploaded', 'UsedFilamentInG','Owner', 'UsedFilamentInMm', 'SharedWithUser', 'EstimatedPrintingTime', 'ThreeDimensionalModel']
         read_only_fields = ['Size', 'Name', 'FileName', 'Owner']
 
+class SlicingConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SlicingConfig
+        fields = ['ConfigLocation', 'GCode']
+
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
