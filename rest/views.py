@@ -41,9 +41,9 @@ class ThreeDimensionalModelViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         file = request.FILES.get('File')
-        content_type = file.content_type
         serializer = ThreeDimensionalModelSerializer(data=request.data)
         if serializer.is_valid():
+            content_type = file.content_type
             if file.name.endswith('.stl') or file.name.endswith('.obj'):
                 obj = serializer.save(Owner=self.request.user, Size=file.size, FileName=file.name, Name=os.path.splitext(file.name)[0])
                 response = {'message:':'POST API and you have uploaded a {} file'.format(content_type), 'id':obj.id}
@@ -91,9 +91,9 @@ class GCodeViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         file = request.FILES.get('File')
-        content_type = file.content_type
         serializer = GCodeSerializer(data=request.data)
         if serializer.is_valid():
+            content_type = file.content_type
             if file.name.endswith('.gcode'):
                 obj = serializer.save(Owner=self.request.user, Size=file.size, FileName=file.name, Name=os.path.splitext(file.name)[0])
                 response = {'message:':'POST API and you have uploaded a {} file'.format(content_type), 'id':obj.id}

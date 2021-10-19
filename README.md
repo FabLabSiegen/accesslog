@@ -6,9 +6,11 @@ The Project is based on Django.
 ## API Endpoints
 
 ### users: 
-- GET`http://localhost:8000/api/users/` returns all users
+#### GET`http://localhost:8000/api/users/` 
+returns all users
 ### groups: 
-- GET`http://localhost:8000/api/groups/` returns all groups
+#### GET`http://localhost:8000/api/groups/` 
+returns all groups
 ### models: 
 #### GET `http://localhost:8000/api/models/` 
 returns all models that are owned by the user or shared with the user
@@ -30,6 +32,9 @@ returns all gcodes with that name provided the user is owner or the model is sha
 #### GET `http://localhost:8000/api/gcode/MODELID/`
 returns single model with all details
 #### POST `http://localhost:8000/api/gcode/`
-allows adding of new models providing: ...
+allows adding of new models providing: File, UsedFilamentInG, UsedFilamentInMm, _SharedWithUser (optional)_, EstimatedPrintingTime, _ThreeDimensionalModel (optional)_
 ### slicingconfig: 
-`http://localhost:8000/api/slicingconfig/`
+#### GET `http://localhost:8000/api/slicingconfig/`
+returns all sclicing configs in a list
+#### GET `http://localhost:8000/api/slicingconfig/GCODEID`
+returns slicing config of gcode 
