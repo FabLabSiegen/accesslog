@@ -6,10 +6,10 @@ The Project is based on Django.
 ## API Endpoints
 
 ### users: 
-#### GET`http://localhost:8000/api/users/` 
+#### GET `http://localhost:8000/api/users/` 
 returns all users
 ### groups: 
-#### GET`http://localhost:8000/api/groups/` 
+#### GET `http://localhost:8000/api/groups/` 
 returns all groups
 ### models: 
 #### GET `http://localhost:8000/api/models/` 
