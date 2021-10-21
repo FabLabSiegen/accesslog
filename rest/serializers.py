@@ -18,7 +18,7 @@ class GCodeSerializer(serializers.ModelSerializer):
 class SlicingConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = SlicingConfig
-        fields = ['ConfigLocation', 'GCode']
+        fields = ['Config', 'GCode']
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

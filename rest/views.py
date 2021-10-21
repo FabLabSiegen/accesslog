@@ -4,6 +4,8 @@ from rest.serializers import *
 from print.models import *
 from django.db.models import Q
 from rest_framework import viewsets
+import json
+from django.http import HttpResponse
 import os
 
 class ThreeDimensionalModelViewSet(viewsets.ModelViewSet):
@@ -111,6 +113,28 @@ class SlicingConfigViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     lookup_field = 'GCode'
+
+    def create(self, request):
+        file = request.FILES.get('Config')
+        serializer = SlicingConfigSerializer(data=request.data)
+        if serializer.is_valid():
+            content_type = file.content_type
+            if file.name.endswith('.json'):
+                obj = serializer.save()
+                response = {'message:':'POST API and you have uploaded a {} file'.format(content_type), 'id':obj.id}
+                return Response(response, status=200)
+            else:
+                response = {'message:':'POST API does not accept {} files'.format(content_type)}
+                return Response(response, status=415)
+        else:
+            response = serializer.errors
+            return Response(response, status=400)
+
+    def retrieve(self, request, *args, **kwargs):
+        # get contents of config json
+        instance = self.get_object()
+        response = json.load(instance.Config)
+        return Response(response)
 
 class UserViewSet(viewsets.ModelViewSet):
     """
