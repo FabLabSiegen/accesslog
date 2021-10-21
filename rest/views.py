@@ -139,6 +139,19 @@ class PrintJobViewSet(viewsets.ModelViewSet):
         serializer = PrintJobSerializer(queryset, many=True)
         return Response(serializer.data)
 
+class PrintMediaFileViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows PrintMediaFiles to be viewed or edited.
+    """
+    serializer_class = PrintMediaFileSerializer
+    queryset = PrintMediaFile.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    lookup_field = 'PrintJob'
+
+    def perform_create(self, serializer):
+        serializer.save(Owner=self.request.user)
+
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.

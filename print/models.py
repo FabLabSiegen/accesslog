@@ -81,8 +81,9 @@ class PrintTemperatureHistory(models.Model):
 
 class PrintMediaFile(models.Model):
     PrintJob = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
-    FileLocation = models.FileField(upload_to='printmedia')
+    File = models.FileField(upload_to='printmedia')
     Description = models.TextField()
+    Owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, related_name='PrintMediaOwner')
 
 class SlicingConfig(models.Model):
     GCode = models.ForeignKey(GCode,on_delete=models.CASCADE)

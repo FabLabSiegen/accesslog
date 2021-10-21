@@ -23,8 +23,14 @@ class SlicingConfigSerializer(serializers.ModelSerializer):
 class PrintJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = PrintJob
-        fields = ['id','User','Machine','GCode','Start','End','State']
-        read_only_fields = ['User']
+        fields = ['id','PrintJob','File', 'Description', 'Owner']
+        read_only_fields = ['Owner']
+
+class PrintMediaFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PrintMediaFile
+        fields = ['id','PrintJob','File','Owner']
+        read_only_fields = ['Owner']
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

@@ -30,6 +30,7 @@ router.register(r'models', r.ThreeDimensionalModelViewSet, basename="ThreeDimens
 router.register(r'gcode', r.GCodeViewSet, basename="GCode")
 router.register(r'slicingconfig', r.SlicingConfigViewSet, basename="SlicingConfig")
 router.register(r'printjob', r.PrintJobViewSet, basename="PrintJob")
+router.register(r'mediafiles', r.PrintMediaFileViewSet, basename="PrintMediaFile")
 
 #url routing
 urlpatterns = [
