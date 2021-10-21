@@ -5,13 +5,13 @@ The Project is based on Django.
 
 ## API Endpoints
 
-### users: 
+### Users: 
 #### GET `http://localhost:8000/api/users/` 
 returns all users
-### groups: 
+### Groups: 
 #### GET `http://localhost:8000/api/groups/` 
 returns all groups
-### models: 
+### Models: 
 #### GET `http://localhost:8000/api/models/` 
 returns all models that are owned by the user or shared with the user
 #### GET `http://localhost:8000/api/models/?id=MODELID`
@@ -22,7 +22,7 @@ returns all models with that name provided the user is owner or the model is sha
 returns single model with all details
 #### POST `http://localhost:8000/api/models/` 
 allows adding of new models providing: File, _Previous (optional)_, _SharedWithUser (optional)_
-### gcode: 
+### GCode: 
 #### GET `http://localhost:8000/api/gcode/`
 returns all gcodes that are owned by the user or shared with the user
 #### GET `http://localhost:8000/api/gcode/?id=GCODEID`
@@ -33,14 +33,14 @@ returns all gcodes with that name provided the user is owner or the model is sha
 returns single model with all details
 #### POST `http://localhost:8000/api/gcode/`
 allows adding of new models providing: File, UsedFilamentInG, UsedFilamentInMm, _SharedWithUser (optional)_, EstimatedPrintingTime, _ThreeDimensionalModel (optional)_
-### slicingconfig: 
+### Slicing Configs: 
 #### GET `http://localhost:8000/api/slicingconfig/`
 returns all sclicing configs in a list
 #### GET `http://localhost:8000/api/slicingconfig/GCODEID`
 returns slicing config of gcode in json format
 #### POST `http://localhost:8000/api/slicingconfig/`
 allows to add new slicing config in json format providing: Config, GCodeID
-### printjob:
+### Print Jobs:
 #### GET `http://localhost:8000/api/printjob/`
 returns all PrintJobs in a list owned by logged in User
 #### GET `http://localhost:8000/api/printjob/PRINTJOBID`
