@@ -37,6 +37,13 @@ allows adding of new models providing: File, UsedFilamentInG, UsedFilamentInMm, 
 #### GET `http://localhost:8000/api/slicingconfig/`
 returns all sclicing configs in a list
 #### GET `http://localhost:8000/api/slicingconfig/GCODEID`
-returns uplaoaded slicing config of gcode in json format
+returns slicing config of gcode in json format
 #### POST `http://localhost:8000/api/slicingconfig/`
 allows to add new slicing config in json format providing: Config, GCodeID
+### printjob:
+#### GET `http://localhost:8000/api/printjob/`
+returns all PrintJobs in a list owned by logged in User
+#### GET `http://localhost:8000/api/printjob/PRINTJOBID`
+returns detailed information about a single PrintJob
+#### POST `http://localhost:8000/api/printjob/`
+allows to add new PrintJobs providing: Machine, GCode, Start, End, State
