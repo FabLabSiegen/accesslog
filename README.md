@@ -37,4 +37,6 @@ allows adding of new models providing: File, UsedFilamentInG, UsedFilamentInMm, 
 #### GET `http://localhost:8000/api/slicingconfig/`
 returns all sclicing configs in a list
 #### GET `http://localhost:8000/api/slicingconfig/GCODEID`
-returns slicing config of gcode 
+returns uplaoaded slicing config of gcode in json format
+#### POST `http://localhost:8000/api/slicingconfig/`
+allows to add new slicing config in json format providing: Config, GCodeID
