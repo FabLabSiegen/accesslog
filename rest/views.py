@@ -127,6 +127,8 @@ class PrintJobViewSet(viewsets.ModelViewSet):
     queryset = PrintJob.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
+    lookup_field = 'id'
+
     def perform_create(self, serializer):
         serializer.save(User=self.request.user)
 
