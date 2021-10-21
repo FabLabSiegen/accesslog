@@ -120,9 +120,22 @@ class SlicingConfigViewSet(viewsets.ModelViewSet):
         return Response(instance.Config)
 
 class PrintJobViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows PrintJobs to be viewed or edited.
+    """
     serializer_class = PrintJobSerializer
     queryset = PrintJob.objects.all()
     permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(User=self.request.user)
+
+    @staticmethod
+    def list(request):
+        # Filter out if models are owned by requesting user
+        queryset = PrintJob.objects.filter(Q(User=request.user.id))
+        serializer = PrintJobSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 class UserViewSet(viewsets.ModelViewSet):
     """

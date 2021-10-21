@@ -24,6 +24,7 @@ class PrintJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = PrintJob
         fields = ['id','User','Machine','GCode','Start','End','State']
+        read_only_fields = ['User']
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
