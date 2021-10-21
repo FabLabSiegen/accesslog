@@ -20,6 +20,10 @@ class SlicingConfigSerializer(serializers.ModelSerializer):
         model = SlicingConfig
         fields = ['Config', 'GCode']
 
+class PrintJobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PrintJob
+        fields = ['id','User','Machine','GCode','Start','End','State']
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

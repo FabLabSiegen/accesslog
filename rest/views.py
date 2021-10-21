@@ -136,6 +136,11 @@ class SlicingConfigViewSet(viewsets.ModelViewSet):
         response = json.load(instance.Config)
         return Response(response)
 
+class PrintJobViewSet(viewsets.ModelViewSet):
+    serializer_class = PrintJobSerializer
+    queryset = PrintJob.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
