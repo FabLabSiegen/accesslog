@@ -156,13 +156,14 @@ class PrintMediaFileViewSet(viewsets.ModelViewSet):
         if (job_user == request.user.id):
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
-            serializer.save(Owner=request.user.id)
             return Response(serializer.data, status=201, headers=headers)
         else:
             return Response(status=403)
 
-        #serializer.save(Owner=self.request.user)
+    def perform_create(self, serializer):
+        serializer.save(Owner=self.request.user)
 
 class UserViewSet(viewsets.ModelViewSet):
     """
