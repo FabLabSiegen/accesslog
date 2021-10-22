@@ -55,3 +55,4 @@ returns all mediafiles
 returns detailed information about a single mediafile
 #### POST `http://localhost:8000/api/mediafiles/`
 allows to add new PrintMediaFiles providing: PrintJobID, File
+Logged in User also needs to be owner of related Print Job
