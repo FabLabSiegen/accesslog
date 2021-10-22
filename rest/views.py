@@ -150,17 +150,20 @@ class PrintMediaFileViewSet(viewsets.ModelViewSet):
     lookup_field = 'PrintJob'
 
     def create(self, request, *args, **kwargs):
+        #lookup the printjob id
         job_id = self.request.data.__getitem__('PrintJob')
+        #lookup the id of the user that owns that print job
         job_user = PrintJob.objects.get(id=job_id).User.id
-        print(job_user)
-        if (job_user == request.user.id):
+        #see if logged in user owns the print job that will be related to the media files
+        if job_user == request.user.id:
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=201, headers=headers)
         else:
-            return Response(status=403)
+            response = {'message':'You are not allowed to add media files to that Print Job because you do not own it'}
+            return Response(response, status=403)
 
     def perform_create(self, serializer):
         serializer.save(Owner=self.request.user)
