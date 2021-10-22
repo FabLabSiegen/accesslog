@@ -149,8 +149,20 @@ class PrintMediaFileViewSet(viewsets.ModelViewSet):
 
     lookup_field = 'PrintJob'
 
-    def perform_create(self, serializer):
-        serializer.save(Owner=self.request.user)
+    def create(self, request, *args, **kwargs):
+        job_id = self.request.data.__getitem__('PrintJob')
+        job_user = PrintJob.objects.get(id=job_id).User.id
+        print(job_user)
+        if (job_user == request.user.id):
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            headers = self.get_success_headers(serializer.data)
+            serializer.save(Owner=request.user.id)
+            return Response(serializer.data, status=201, headers=headers)
+        else:
+            return Response(status=403)
+
+        #serializer.save(Owner=self.request.user)
 
 class UserViewSet(viewsets.ModelViewSet):
     """
