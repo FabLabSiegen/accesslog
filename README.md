@@ -51,8 +51,8 @@ allows to add new PrintJobs providing: Machine, GCode, Start, End, State
 ### Print Media Files:
 #### GET `http://localhost:8000/api/mediafiles/`
 returns all mediafiles
-#### GET `http://localhost:8000/api/mediafiles/PRINTJOBID`
-returns detailed information about a single mediafile
+#### GET `http://localhost:8000/api/mediafiles/MEDIAFILEID`
+returns detailed information (including download link) about a single mediafile providing `MEDIAFILEID`
 #### POST `http://localhost:8000/api/mediafiles/`
 allows to add new PrintMediaFiles providing: PrintJobID, File
 Logged in User also needs to be owner of related Print Job

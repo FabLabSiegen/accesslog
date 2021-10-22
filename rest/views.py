@@ -147,14 +147,14 @@ class PrintMediaFileViewSet(viewsets.ModelViewSet):
     queryset = PrintMediaFile.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
-    lookup_field = 'PrintJob'
+    lookup_field = 'id'
 
     def create(self, request, *args, **kwargs):
-        #lookup the printjob id
+        # Lookup the printjob id
         job_id = self.request.data.__getitem__('PrintJob')
-        #lookup the id of the user that owns that print job
+        # Lookup the id of the user that owns that print job
         job_user = PrintJob.objects.get(id=job_id).User.id
-        #see if logged in user owns the print job that will be related to the media files
+        # See if logged in user owns the print job that will be related to the media files
         if job_user == request.user.id:
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -167,6 +167,15 @@ class PrintMediaFileViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(Owner=self.request.user)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        if request.user.id == instance.Owner.id:
+            return Response(serializer.data)
+        else:
+            response = {'message':'You are not allowed to retrieve this entry because you are not the Owner'}
+            return Response(response, status=403)
 
 class UserViewSet(viewsets.ModelViewSet):
     """
