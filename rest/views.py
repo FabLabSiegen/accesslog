@@ -1,5 +1,7 @@
 from rest_framework.response import Response
-from rest_framework import permissions
+from rest_framework import permissions, authentication
+from rest_framework.views import APIView
+
 from rest.serializers import *
 from print.models import *
 from django.db.models import Q
@@ -176,6 +178,21 @@ class PrintMediaFileViewSet(viewsets.ModelViewSet):
         else:
             response = {'message':'You are not allowed to retrieve this entry because you are not the Owner'}
             return Response(response, status=403)
+
+class PrintMediaFileByPrintJob(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        pk = self.kwargs['pk']
+        queryset = PrintMediaFile.objects.filter(Q(PrintJob=pk))
+        if queryset:
+            serializer = PrintMediaFileSerializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            response = {'message':'There are no Media Files related to that Print Job'}
+            return Response(response, status=404)
+
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """

@@ -30,7 +30,7 @@ router.register(r'models', r.ThreeDimensionalModelViewSet, basename="ThreeDimens
 router.register(r'gcode', r.GCodeViewSet, basename="GCode")
 router.register(r'slicingconfig', r.SlicingConfigViewSet, basename="SlicingConfig")
 router.register(r'printjob', r.PrintJobViewSet, basename="PrintJob")
-router.register(r'mediafiles', r.PrintMediaFileViewSet, basename="PrintMediaFile")
+router.register(r'mediafile', r.PrintMediaFileViewSet, basename="PrintMediaFile")
 
 #url routing
 urlpatterns = [
@@ -40,4 +40,5 @@ urlpatterns = [
     path('', include("django.contrib.auth.urls")),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/mediafiles/<int:pk>/', r.PrintMediaFileByPrintJob.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
