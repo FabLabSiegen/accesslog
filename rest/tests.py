@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from print.models import *
 
-class ThreeDimensionalModelTests(APITestCase):
+class ThreeDimensionalModelTestCase(APITestCase):
 
     def setUp(self):
         """
@@ -32,7 +32,6 @@ class ThreeDimensionalModelTests(APITestCase):
         # Test incorrect file type input response
         incorrect_file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
         incorrect_type = client.post(reverse('ThreeDimensionalModel-list'), {'File': incorrect_file})
-        self.assertNotEqual(incorrect_type.status_code, status.HTTP_200_OK)
         self.assertEqual(incorrect_type.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
         # Test null input, bad request
