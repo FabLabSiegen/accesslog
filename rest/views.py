@@ -131,8 +131,7 @@ class PrintJobViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(User=self.request.user)
 
-    @staticmethod
-    def list(request):
+    def list(self, request, *args, **kwargs):
         # Filter out if models are owned by requesting user
         queryset = PrintJob.objects.filter(Q(User=request.user.id))
         serializer = PrintJobSerializer(queryset, many=True)
