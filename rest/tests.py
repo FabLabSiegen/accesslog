@@ -37,8 +37,8 @@ class ThreeDimensionalModelTestCase(APITestCase):
         client = login()
         # Test correct input response
         file = SimpleUploadedFile("file.obj", b"file_content", content_type="application/octet-stream")
-        correct = client.post(reverse('ThreeDimensionalModel-list'), {'File': file})
-        self.assertEqual(correct.status_code, status.HTTP_200_OK)
+        request = client.post(reverse('ThreeDimensionalModel-list'), {'File': file})
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
         # Test if there is actually one file uploaded
         self.assertEqual(ThreeDimensionalModel.objects.count(), 1)
 
@@ -49,8 +49,8 @@ class ThreeDimensionalModelTestCase(APITestCase):
         client = login()
         # Test incorrect file type input response
         file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
-        incorrect_type = client.post(reverse('ThreeDimensionalModel-list'), {'File': file})
-        self.assertEqual(incorrect_type.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+        request = client.post(reverse('ThreeDimensionalModel-list'), {'File': file})
+        self.assertEqual(request.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     def test_create_model_bad_request(self):
         """
@@ -58,5 +58,5 @@ class ThreeDimensionalModelTestCase(APITestCase):
         """
         client = login()
         # Test null input, bad request
-        incorrect_request = client.post(reverse('ThreeDimensionalModel-list'), None)
-        self.assertEqual(incorrect_request.status_code, status.HTTP_400_BAD_REQUEST)
+        request = client.post(reverse('ThreeDimensionalModel-list'), None)
+        self.assertEqual(request.status_code, status.HTTP_400_BAD_REQUEST)
