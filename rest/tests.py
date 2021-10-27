@@ -1,10 +1,10 @@
 import tempfile
-
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APITestCase, APIClient, RequestsClient
 from print.models import *
+import json
 
 
 def login():
@@ -14,7 +14,7 @@ def login():
     return client
 
 
-class ThreeDimensionalModelTestCase(APITestCase):
+class ThreeDimensionalModelCreateTestCase(APITestCase):
 
     def setUp(self):
         """
@@ -60,3 +60,31 @@ class ThreeDimensionalModelTestCase(APITestCase):
         # Test null input, bad request
         request = client.post(reverse('ThreeDimensionalModel-list'), None)
         self.assertEqual(request.status_code, status.HTTP_400_BAD_REQUEST)
+
+class ThreeDimensionalModelListTestCase(APITestCase):
+
+    def setUp(self):
+        """
+        Create Test User to authenticate and add test objects to database
+        """
+        User.objects.create_user(username='testuser', id=1)
+
+    def test_list_model_owner(self):
+        """
+        Ensure that Owners can request their models
+        """
+        client = login()
+        ThreeDimensionalModel.objects.create(Owner_id=1)
+        request = client.get(reverse('ThreeDimensionalModel-list'))
+        entry_count = json.dumps(request.data).count('id')
+        self.assertEqual(entry_count, 1)
+
+    def test_list_model_shared(self):
+        """
+        Ensure that shared users can request models shared with them
+        """
+        client = login()
+        ThreeDimensionalModel.objects.create(SharedWithUser_id=1)
+        request = client.get(reverse('ThreeDimensionalModel-list'))
+        entry_count = json.dumps(request.data).count('id')
+        self.assertEqual(entry_count, 1)
