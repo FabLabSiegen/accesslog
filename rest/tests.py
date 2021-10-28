@@ -18,7 +18,7 @@ class ThreeDimensionalModelCreateTestCase(APITestCase):
 
     def setUp(self):
         """
-        Create Test User to authenticate and add and request test objects to database
+        Create Test User to authenticate and add and request test objects
         """
         User.objects.create_user('testuser')
 
@@ -67,7 +67,7 @@ class ThreeDimensionalModelListTestCase(APITestCase):
 
     def setUp(self):
         """
-        Create Test User to authenticate and add and request test objects to database
+        Create Test User to authenticate and add and request test objects
         """
         User.objects.create_user(username='testuser', id=1)
 
@@ -119,7 +119,7 @@ class GCodeCreateTestCase(APITestCase):
 
     def setUp(self):
         """
-        Create Test User to authenticate and add and request test objects to database
+        Create Test User to authenticate and add and request test objects
         """
         User.objects.create_user(username='testuser', id=1)
 
@@ -170,7 +170,7 @@ class GCodeListTestCase(APITestCase):
 
     def setUp(self):
         """
-        Create Test User to authenticate and add and request test objects to database
+        Create Test User to authenticate and add and request test objects
         """
         User.objects.create_user(username='testuser', id=1)
 
@@ -247,7 +247,7 @@ class SlicingConfigRetrieveTestCase(APITestCase):
 
     def setUp(self):
         """
-        Create Test User to authenticate and add and request test objects to database
+        Create Test User to authenticate and add and request test objects
         """
         User.objects.create_user(username='testuser', id=1)
 
@@ -290,7 +290,7 @@ class SlicingConfigCreateTestCase(APITestCase):
 
     def setUp(self):
         """
-        Create Test User to authenticate and add and request test objects to database
+        Create Test User to authenticate and add and request test objects
         """
         User.objects.create_user(username='testuser', id=1)
 
@@ -330,7 +330,7 @@ class PrintJobListTestCase(APITestCase):
 
     def setUp(self):
         """
-        Create Test User to authenticate and add and request test objects to database
+        Create Test User to authenticate and add and request test objects
         """
         User.objects.create_user(username='testuser', id=1)
 
@@ -373,7 +373,7 @@ class PrintJobCreateTestCase(APITestCase):
 
     def setUp(self):
         """
-        Create Test User to authenticate and add and request test objects to database
+        Create Test User to authenticate and add and request test objects
         """
         User.objects.create_user(username='testuser', id=1)
 
@@ -394,7 +394,7 @@ class PrintJobRetrieveTestCase(APITestCase):
 
     def setUp(self):
         """
-        Create Test User to authenticate and add and request test objects to database
+        Create Test User to authenticate and add and request test objects
         """
         User.objects.create_user(username='testuser', id=1)
 
