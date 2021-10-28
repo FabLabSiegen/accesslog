@@ -18,7 +18,7 @@ class ThreeDimensionalModelCreateTestCase(APITestCase):
 
     def setUp(self):
         """
-        Create Test User to authenticate
+        Create Test User to authenticate and add and request test objects to database
         """
         User.objects.create_user('testuser')
 
@@ -65,7 +65,7 @@ class ThreeDimensionalModelListTestCase(APITestCase):
 
     def setUp(self):
         """
-        Create Test User to authenticate and add test objects to database
+        Create Test User to authenticate and add and request test objects to database
         """
         User.objects.create_user(username='testuser', id=1)
 
@@ -117,7 +117,7 @@ class GCodeCreateTestCase(APITestCase):
 
     def setUp(self):
         """
-        Create Test User to authenticate and add test objects to database
+        Create Test User to authenticate and add and request test objects to database
         """
         User.objects.create_user(username='testuser', id=1)
 
@@ -161,3 +161,80 @@ class GCodeCreateTestCase(APITestCase):
         # Test null input (bad request)
         request = client.post(reverse('GCode-list'), None)
         self.assertEqual(request.status_code, status.HTTP_400_BAD_REQUEST)
+
+class GCodeListTestCase(APITestCase):
+
+    def setUp(self):
+        """
+        Create Test User to authenticate and add and request test objects to database
+        """
+        User.objects.create_user(username='testuser', id=1)
+
+    def test_list_gcode_owner(self):
+        """
+        Ensure that Owners can request their GCode
+        """
+        client = login()
+        GCode.objects.create(
+            id=1,
+            Owner_id=1,
+            UsedFilamentInG=123.123,
+            UsedFilamentInMm=123.123,
+            EstimatedPrintingTime='12:03:00'
+        )
+        request = client.get(reverse('GCode-list'))
+        entry_count = json.dumps(request.data).count('id')
+        self.assertEqual(entry_count, 1)
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
+
+    def test_list_gcode_shared(self):
+        """
+        Ensure that shared users can request GCode shared with them
+        """
+        client = login()
+        GCode.objects.create(
+            id=1,
+            SharedWithUser_id=1,
+            UsedFilamentInG=123.123,
+            UsedFilamentInMm=123.123,
+            EstimatedPrintingTime='12:03:00'
+        )
+        request = client.get(reverse('GCode-list'))
+        entry_count = json.dumps(request.data).count('id')
+        self.assertEqual(entry_count, 1)
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
+
+    def test_list_gcode_id(self):
+        """
+        Ensure that shared users can request GCode shared with them by id
+        """
+        client = login()
+        GCode.objects.create(
+            id=1,
+            Owner_id=1,
+            UsedFilamentInG=123.123,
+            UsedFilamentInMm=123.123,
+            EstimatedPrintingTime='12:03:00'
+        )
+        request = client.get(reverse('GCode-list')+'?id=1')
+        entry_count = json.dumps(request.data).count('id')
+        self.assertEqual(entry_count, 1)
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
+
+    def test_list_gcode_name(self):
+        """
+        Ensure that shared users can request GCode shared with them by name
+        """
+        client = login()
+        GCode.objects.create(
+            id=1,
+            Owner_id=1,
+            UsedFilamentInG=123.123,
+            UsedFilamentInMm=123.123,
+            EstimatedPrintingTime='12:03:00',
+            Name='testgcode'
+        )
+        request = client.get(reverse('GCode-list')+'?name=testgcode')
+        entry_count = json.dumps(request.data).count('id')
+        self.assertEqual(entry_count, 1)
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
