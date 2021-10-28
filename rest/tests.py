@@ -57,7 +57,7 @@ class ThreeDimensionalModelCreateTestCase(APITestCase):
         Ensure that a bad request leads to a 400 Error
         """
         client = login()
-        # Test null input, bad request
+        # Test null input (bad request)
         request = client.post(reverse('ThreeDimensionalModel-list'), None)
         self.assertEqual(request.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -112,3 +112,52 @@ class ThreeDimensionalModelListTestCase(APITestCase):
         entry_count = json.dumps(request.data).count('id')
         self.assertEqual(entry_count, 1)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
+
+class GCodeCreateTestCase(APITestCase):
+
+    def setUp(self):
+        """
+        Create Test User to authenticate and add test objects to database
+        """
+        User.objects.create_user(username='testuser', id=1)
+
+    def test_create_gcode(self):
+        """
+        Ensure we can upload a GCode.
+        """
+        client = login()
+        # Test correct input response
+        file = SimpleUploadedFile("file.gcode", b"file_content", content_type="application/octet-stream")
+        request = client.post(reverse('GCode-list'), {
+            'File': file,
+            'UsedFilamentInG': 1233.23,
+            'UsedFilamentInMm': 12.324,
+            'EstimatedPrintingTime': '20:12:20'
+        })
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
+        # Test if there is actually one file uploaded
+        self.assertEqual(GCode.objects.count(), 1)
+
+    def test_create_gcode_wrong_type(self):
+        """
+        Ensure that a wrong file type leads to a 415 Error
+        """
+        client = login()
+        # Test incorrect file type input response
+        file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
+        request = client.post(reverse('GCode-list'), {
+            'File': file,
+            'UsedFilamentInG': 1233.23,
+            'UsedFilamentInMm': 12.324,
+            'EstimatedPrintingTime': '20:12:20'}
+        )
+        self.assertEqual(request.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    def test_create_gcode_bad_request(self):
+        """
+        Ensure that a bad request leads to a 400 Error
+        """
+        client = login()
+        # Test null input (bad request)
+        request = client.post(reverse('GCode-list'), None)
+        self.assertEqual(request.status_code, status.HTTP_400_BAD_REQUEST)
