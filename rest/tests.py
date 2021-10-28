@@ -390,3 +390,27 @@ class PrintJobCreateTestCase(APITestCase):
         # Test if created PrintJob is related to creating user
         self.assertEqual(request.data['User'], 1)
 
+class PrintJobRetrieveTestCase(APITestCase):
+
+    def setUp(self):
+        """
+        Create Test User to authenticate and add and request test objects to database
+        """
+        User.objects.create_user(username='testuser', id=1)
+
+    def test_print_job_retrieve(self):
+        """
+        Ensure that users can retrieve single PrintJob
+        """
+        client = login()
+        PrintJob.objects.create(
+            id=1,
+            Start="2021-10-21T13:39:00Z",
+            End="2021-10-21T13:39:00Z",
+            State=1,
+            User_id=1
+        )
+        request = client.get(reverse('PrintJob-list')+'1/')
+        entry_count = json.dumps(request.data).count('id')
+        self.assertEqual(entry_count, 1)
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
