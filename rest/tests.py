@@ -252,3 +252,29 @@ class SlicingConfigRetrieveTestCase(APITestCase):
         Ensure that shared users can request GCode shared with them by name
         """
         client = login()
+        test_json = {
+            'testjson': {
+                'test1': {
+                    'data': 'Testdata'
+                },
+                'test2': {
+                    'data': 'Testdata'
+                },
+            }
+        }
+        GCode.objects.create(
+            id=1,
+            Owner_id=1,
+            UsedFilamentInG=123.123,
+            UsedFilamentInMm=123.123,
+            EstimatedPrintingTime='12:03:00',
+            Name='testgcode'
+        )
+        SlicingConfig.objects.create(
+            Config=test_json,
+            GCode_id=1
+        )
+        request = client.get(reverse('SlicingConfig-list')+'1/')
+        # Test if response json is the same as we created before
+        self.assertJSONEqual(json.dumps(request.data),json.dumps(test_json))
+        self.assertEqual(request.status_code,status.HTTP_200_OK)
