@@ -249,7 +249,7 @@ class SlicingConfigRetrieveTestCase(APITestCase):
 
     def test_slicing_config_retrieve(self):
         """
-        Ensure that shared users can request GCode shared with them by name
+        Ensure that shared users can request SlicingConfig by providing GCode ID
         """
         client = login()
         test_json = {
