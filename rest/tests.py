@@ -249,9 +249,10 @@ class SlicingConfigRetrieveTestCase(APITestCase):
 
     def test_slicing_config_retrieve(self):
         """
-        Ensure that shared users can request SlicingConfig by providing GCode ID
+        Ensure that users can request SlicingConfig by providing GCode ID
         """
         client = login()
+        # Create test JSON to be used in SlicingConfig creation
         test_json = {
             'testjson': {
                 'test1': {
@@ -262,6 +263,7 @@ class SlicingConfigRetrieveTestCase(APITestCase):
                 },
             }
         }
+        # Create test GCode to be able to create Slicing Config related to GCode
         GCode.objects.create(
             id=1,
             Owner_id=1,
@@ -270,6 +272,7 @@ class SlicingConfigRetrieveTestCase(APITestCase):
             EstimatedPrintingTime='12:03:00',
             Name='testgcode'
         )
+        # Create test slicing config to retrieve afterwards
         SlicingConfig.objects.create(
             Config=test_json,
             GCode_id=1
@@ -278,3 +281,43 @@ class SlicingConfigRetrieveTestCase(APITestCase):
         # Test if response json is the same as we created before
         self.assertJSONEqual(json.dumps(request.data),json.dumps(test_json))
         self.assertEqual(request.status_code,status.HTTP_200_OK)
+
+class SlicingConfigCreateTestCase(APITestCase):
+
+    def setUp(self):
+        """
+        Create Test User to authenticate and add and request test objects to database
+        """
+        User.objects.create_user(username='testuser', id=1)
+
+    def test_slicing_config_create(self):
+        """
+        Ensure that users can upload SlicingConfig by providing related GCode
+        """
+        client = login()
+        # Creating related GCode for SlicingConfig relation
+        GCode.objects.create(
+            id=1,
+            Owner_id=1,
+            UsedFilamentInG=123.123,
+            UsedFilamentInMm=123.123,
+            EstimatedPrintingTime='12:03:00',
+            Name='testgcode'
+        )
+        # Creating Json for testing
+        test_json = {
+            'testjson': {
+                'test1': {
+                    'data': 'Testdata'
+                },
+                'test2': {
+                    'data': 'Testdata'
+                },
+            }
+        }
+        # Creating request to upload Slicing config and relate it to an existing GCode
+        request = client.post(reverse('SlicingConfig-list'), {'Config':test_json, 'GCode':1}, format='json')
+        entry_count = json.dumps(request.data).count('Config')
+        # Test if entry was created
+        self.assertEqual(request.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(entry_count, 1)
