@@ -24,15 +24,15 @@ class ThreeDimensionalModelViewSet(viewsets.ModelViewSet):
         queryset = ThreeDimensionalModel.objects.filter(Q(Owner=request.user.id) | Q(SharedWithUser=request.user.id))
         if id is not None:
             try:
-                id_queryset = queryset.get(id=id)
-                serializer = ThreeDimensionalModelSerializer(id_queryset)
+                queryset = queryset.get(id=id)
+                serializer = ThreeDimensionalModelSerializer(queryset)
                 return Response(serializer.data,200)
             except:
                 return Response(status=404)
         elif name is not None:
             try:
-                name_queryset = queryset.filter(Name=name)
-                serializer = ThreeDimensionalModelSerializer(name_queryset, many=True)
+                queryset = queryset.filter(Name=name)
+                serializer = ThreeDimensionalModelSerializer(queryset, many=True)
                 return Response(serializer.data, 200)
             except:
                 return Response(status=404)
@@ -74,15 +74,15 @@ class GCodeViewSet(viewsets.ModelViewSet):
         queryset = GCode.objects.filter(Q(Owner=request.user.id) | Q(SharedWithUser=request.user.id))
         if id is not None:
             try:
-                id_queryset = queryset.get(id=id)
-                serializer = GCodeSerializer(id_queryset)
+                queryset = queryset.get(id=id)
+                serializer = GCodeSerializer(queryset)
                 return Response(serializer.data,200)
             except:
                 return Response(status=404)
         elif name is not None:
             try:
-                name_queryset = queryset.filter(Name=name)
-                serializer = GCodeSerializer(name_queryset, many=True)
+                queryset = queryset.filter(Name=name)
+                serializer = GCodeSerializer(queryset, many=True)
                 return Response(serializer.data, 200)
             except:
                 return Response(status=404)

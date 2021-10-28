@@ -78,6 +78,7 @@ class ThreeDimensionalModelListTestCase(APITestCase):
         request = client.get(reverse('ThreeDimensionalModel-list'))
         entry_count = json.dumps(request.data).count('id')
         self.assertEqual(entry_count, 1)
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
 
     def test_list_model_shared(self):
         """
@@ -88,3 +89,26 @@ class ThreeDimensionalModelListTestCase(APITestCase):
         request = client.get(reverse('ThreeDimensionalModel-list'))
         entry_count = json.dumps(request.data).count('id')
         self.assertEqual(entry_count, 1)
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
+
+    def test_list_model_id(self):
+        """
+        Ensure that shared users can request models shared with them by id
+        """
+        client = login()
+        ThreeDimensionalModel.objects.create(id=1, Owner_id=1)
+        request = client.get(reverse('ThreeDimensionalModel-list')+'?id=1')
+        entry_count = json.dumps(request.data).count('id')
+        self.assertEqual(entry_count, 1)
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
+
+    def test_list_model_name(self):
+        """
+        Ensure that shared users can request models shared with them by name
+        """
+        client = login()
+        ThreeDimensionalModel.objects.create(Name='testmodel', Owner_id=1)
+        request = client.get(reverse('ThreeDimensionalModel-list')+'?name=testmodel')
+        entry_count = json.dumps(request.data).count('id')
+        self.assertEqual(entry_count, 1)
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
