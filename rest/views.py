@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework.views import APIView
 from rest.serializers import *
 from print.models import *
@@ -46,9 +46,9 @@ class ThreeDimensionalModelViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             content_type = file.content_type
             if file.name.endswith('.stl') or file.name.endswith('.obj'):
-                obj = serializer.save(Owner=self.request.user, Size=file.size, FileName=file.name, Name=os.path.splitext(file.name)[0])
-                response = {'message:':'POST API and you have uploaded a {} file'.format(content_type), 'id':obj.id}
-                return Response(response, status=200)
+                serializer.save(Owner=self.request.user, Size=file.size, FileName=file.name, Name=os.path.splitext(file.name)[0])
+                headers = self.get_success_headers(serializer.data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
             else:
                 response = {'message:':'POST API does not accept {} files'.format(content_type)}
                 return Response(response, status=415)
@@ -96,9 +96,9 @@ class GCodeViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             content_type = file.content_type
             if file.name.endswith('.gcode'):
-                obj = serializer.save(Owner=self.request.user, Size=file.size, FileName=file.name, Name=os.path.splitext(file.name)[0])
-                response = {'message:':'POST API and you have uploaded a {} file'.format(content_type), 'id':obj.id}
-                return Response(response, status=200)
+                serializer.save(Owner=self.request.user, Size=file.size, FileName=file.name, Name=os.path.splitext(file.name)[0])
+                headers = self.get_success_headers(serializer.data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
             else:
                 response = {'message:':'POST API does not accept {} files'.format(content_type)}
                 return Response(response, status=415)

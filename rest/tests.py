@@ -38,9 +38,11 @@ class ThreeDimensionalModelCreateTestCase(APITestCase):
         # Test correct input response
         file = SimpleUploadedFile("file.obj", b"file_content", content_type="application/octet-stream")
         request = client.post(reverse('ThreeDimensionalModel-list'), {'File': file})
-        self.assertEqual(request.status_code, status.HTTP_200_OK)
+        self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         # Test if there is actually one file uploaded
         self.assertEqual(ThreeDimensionalModel.objects.count(), 1)
+        # Test if uploading user was associated as owner of model
+        self.assertEqual(request.data['Owner'], 1)
 
     def test_create_model_wrong_type(self):
         """
@@ -134,9 +136,11 @@ class GCodeCreateTestCase(APITestCase):
             'UsedFilamentInMm': 12.324,
             'EstimatedPrintingTime': '20:12:20'
         })
-        self.assertEqual(request.status_code, status.HTTP_200_OK)
+        self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         # Test if there is actually one file uploaded
         self.assertEqual(GCode.objects.count(), 1)
+        # Test if uploading user was associated as owner of gcode
+        self.assertEqual(request.data['Owner'], 1)
 
     def test_create_gcode_wrong_type(self):
         """
@@ -321,3 +325,68 @@ class SlicingConfigCreateTestCase(APITestCase):
         # Test if entry was created
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         self.assertEqual(entry_count, 1)
+
+class PrintJobListTestCase(APITestCase):
+
+    def setUp(self):
+        """
+        Create Test User to authenticate and add and request test objects to database
+        """
+        User.objects.create_user(username='testuser', id=1)
+
+    def test_print_job_list(self):
+        """
+        Ensure that users can request owned PrintJobs
+        """
+        client = login()
+        PrintJob.objects.create(
+            Start="2021-10-21T13:39:00Z",
+            End="2021-10-21T13:39:00Z",
+            State=1,
+            User_id=1
+        )
+        request = client.get(reverse('PrintJob-list'))
+        entry_count = json.dumps(request.data).count('id')
+        self.assertEqual(entry_count, 1)
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
+
+    def test_print_job_list_unowned(self):
+        """
+        Ensure that users cannot request unowned PrintJobs
+        """
+        client = login()
+        # Create User that is not logged in
+        User.objects.create_user(username='other_user', id=2)
+        # Create PrintJob of not logged in User
+        PrintJob.objects.create(
+            Start="2021-10-21T13:39:00Z",
+            End="2021-10-21T13:39:00Z",
+            State=1,
+            User_id=2
+        )
+        request = client.get(reverse('PrintJob-list'))
+        entry_count = json.dumps(request.data).count('id')
+        # Test if logged in User does not see PrintJobs of not logged in User
+        self.assertEqual(entry_count, 0)
+
+class PrintJobCreateTestCase(APITestCase):
+
+    def setUp(self):
+        """
+        Create Test User to authenticate and add and request test objects to database
+        """
+        User.objects.create_user(username='testuser', id=1)
+
+    def test_print_job_create(self):
+        """
+        Ensure that users can create PrintJobs and own them afterwards
+        """
+        client = login()
+        request = client.post(reverse('PrintJob-list'), {'Start':'2021-10-21T13:39:00Z', 'End':'2021-10-21T13:39:00Z', 'State':1}, format='json')
+        entry_count = json.dumps(request.data).count('id')
+        # Test if entry was created
+        self.assertEqual(request.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(entry_count, 1)
+        # Test if created PrintJob is related to creating user
+        self.assertEqual(request.data['User'], 1)
+
