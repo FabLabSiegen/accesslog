@@ -238,3 +238,17 @@ class GCodeListTestCase(APITestCase):
         entry_count = json.dumps(request.data).count('id')
         self.assertEqual(entry_count, 1)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
+
+class SlicingConfigRetrieveTestCase(APITestCase):
+
+    def setUp(self):
+        """
+        Create Test User to authenticate and add and request test objects to database
+        """
+        User.objects.create_user(username='testuser', id=1)
+
+    def test_slicing_config_retrieve(self):
+        """
+        Ensure that shared users can request GCode shared with them by name
+        """
+        client = login()
