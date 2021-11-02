@@ -40,5 +40,5 @@ urlpatterns = [
     path('', include("django.contrib.auth.urls")),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('api/mediafiles/<int:pk>/', r.PrintMediaFileByPrintJob.as_view()),
+    path('api/mediafiles/<int:pk>/', r.PrintMediaFileByPrintJob.as_view() , name="MediaFilesByPrintJob-get"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

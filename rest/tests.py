@@ -414,3 +414,156 @@ class PrintJobRetrieveTestCase(APITestCase):
         entry_count = json.dumps(request.data).count('id')
         self.assertEqual(entry_count, 1)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
+
+
+class PrintMediaFileCreateTestCase(APITestCase):
+
+    def setUp(self):
+        """
+        Create Test User to authenticate and add and request test objects
+        """
+        User.objects.create_user(username='testuser', id=1)
+        User.objects.create_user(username='testuser2', id=2)
+
+    def test_media_file_create(self):
+        """
+        Ensure that users can create media files of existing Print Jobs if they own the Print Job
+        """
+        client = login()
+        PrintJob.objects.create(
+            id=1,
+            Start="2021-10-21T13:39:00Z",
+            End="2021-10-21T13:39:00Z",
+            State=1,
+            User_id=1
+        )
+        file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
+        request = client.post(reverse('PrintMediaFile-list'), {'PrintJob':1, 'File':file})
+        entry_count = json.dumps(request.data).count('id')
+        # Test if entry was created
+        self.assertEqual(request.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(entry_count, 1)
+
+    def test_media_file_create_forbidden(self):
+        """
+        Ensure that users cannot create media files of existing Print Jobs if they do not own the Print Job
+        """
+        client = login()
+        PrintJob.objects.create(
+            id=1,
+            Start="2021-10-21T13:39:00Z",
+            End="2021-10-21T13:39:00Z",
+            State=1,
+            User_id=2
+        )
+        file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
+        request = client.post(reverse('PrintMediaFile-list'), {'PrintJob':1, 'File':file})
+        entry_count = json.dumps(request.data).count('id')
+        # Test if entry was created
+        self.assertEqual(request.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(entry_count, 0)
+
+class PrintMediaFileRetrieveTestCase(APITestCase):
+
+    def setUp(self):
+        """
+        Create Test User to authenticate and add and request test objects
+        """
+        User.objects.create_user(username='testuser', id=1)
+        User.objects.create_user(username='testuser2', id=2)
+
+    def test_media_file_retrieve(self):
+        """
+        Ensure that users can retrieve Media Files they own
+        """
+        client = login()
+        file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
+        PrintJob.objects.create(
+            id=1,
+            Start="2021-10-21T13:39:00Z",
+            End="2021-10-21T13:39:00Z",
+            State=1,
+            User_id=1
+        )
+        PrintMediaFile.objects.create(
+            id=1,
+            File=file,
+            PrintJob_id=1,
+            Owner_id=1
+        )
+        request = client.get(reverse('PrintMediaFile-list')+'1/')
+        entry_count = json.dumps(request.data).count('id')
+        self.assertEqual(entry_count, 1)
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
+
+    def test_media_file_retrieve_forbidden(self):
+        """
+        Ensure that users cannot retrieve Media Files they do not own
+        """
+        client = login()
+        file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
+        PrintJob.objects.create(
+            id=1,
+            Start="2021-10-21T13:39:00Z",
+            End="2021-10-21T13:39:00Z",
+            State=1,
+            User_id=2
+        )
+        PrintMediaFile.objects.create(
+            id=1,
+            File=file,
+            PrintJob_id=1,
+            Owner_id=2
+        )
+        request = client.get(reverse('PrintMediaFile-list')+'1/')
+        entry_count = json.dumps(request.data).count('id')
+        self.assertEqual(entry_count, 0)
+        self.assertEqual(request.status_code, status.HTTP_403_FORBIDDEN)
+
+class PrintMediaFileByPrintJobTestCase(APITestCase):
+
+    def setUp(self):
+        """
+        Create Test User to authenticate and add and request test objects
+        """
+        User.objects.create_user(username='testuser', id=1)
+
+    def test_media_file_list_by_print_job(self):
+        """
+        Ensure that users can retrieve Media Files providing Print Job ID
+        """
+        client = login()
+        file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
+        PrintJob.objects.create(
+            id=1,
+            Start="2021-10-21T13:39:00Z",
+            End="2021-10-21T13:39:00Z",
+            State=1,
+            User_id=1
+        )
+        PrintMediaFile.objects.create(
+            id=1,
+            File=file,
+            PrintJob_id=1,
+            Owner_id=1
+        )
+        PrintMediaFile.objects.create(
+            id=2,
+            File=file,
+            PrintJob_id=1,
+            Owner_id=1
+        )
+        request = client.get(reverse('MediaFilesByPrintJob-get', args=[1]))
+        entry_count = json.dumps(request.data).count('id')
+        self.assertEqual(entry_count, 2)
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
+
+    def test_media_file_list_by_print_job_not_found(self):
+        """
+        Ensure that users get a Not Found error when there is no Media File connected to that Print Job
+        """
+        client = login()
+        request = client.get(reverse('MediaFilesByPrintJob-get', args=[1]))
+        entry_count = json.dumps(request.data).count('id')
+        self.assertEqual(entry_count, 0)
+        self.assertEqual(request.status_code, status.HTTP_404_NOT_FOUND)
