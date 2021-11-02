@@ -20,7 +20,7 @@ class ThreeDimensionalModelCreateTestCase(APITestCase):
         """
         Create Test User to authenticate and add and request test objects
         """
-        User.objects.create_user('testuser')
+        User.objects.create_user(username='testuser', id=1)
 
     def test_login(self):
         """
@@ -30,13 +30,27 @@ class ThreeDimensionalModelCreateTestCase(APITestCase):
         request = client.request()
         self.assertEqual(request.status_code, status.HTTP_200_OK)
 
-    def test_create_model(self):
+    def test_create_model_obj(self):
         """
-        Ensure we can upload a ThreeDimensionalModel.
+        Ensure we can upload a ThreeDimensionalModel in obj format
         """
         client = login()
         # Test correct input response
         file = SimpleUploadedFile("file.obj", b"file_content", content_type="application/octet-stream")
+        request = client.post(reverse('ThreeDimensionalModel-list'), {'File': file})
+        self.assertEqual(request.status_code, status.HTTP_201_CREATED)
+        # Test if there is actually one file uploaded
+        self.assertEqual(ThreeDimensionalModel.objects.count(), 1)
+        # Test if uploading user was associated as owner of model
+        self.assertEqual(request.data['Owner'], 1)
+
+    def test_create_model_stl(self):
+        """
+        Ensure we can upload a ThreeDimensionalModel in stl format
+        """
+        client = login()
+        # Test correct input response
+        file = SimpleUploadedFile("file.stl", b"file_content", content_type="application/octet-stream")
         request = client.post(reverse('ThreeDimensionalModel-list'), {'File': file})
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         # Test if there is actually one file uploaded
