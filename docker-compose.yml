@@ -12,6 +12,13 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+  octoprint:
+    image: octoprint/octoprint
+    restart: unless-stopped
+    ports:
+      - 5000:5000
+    volumes:
+      - octoprint:/octoprint
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
@@ -23,5 +30,7 @@ services:
       - .env.dev
     depends_on:
       - db
+      - octoprint
 volumes:
   postgres_data:
+  octoprint:
