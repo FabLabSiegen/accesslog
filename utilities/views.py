@@ -1,6 +1,7 @@
-
+from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from extra_views import ModelFormSetView, InlineFormSetView
 from print.models import Machine, MachineCategory
 from django.contrib.auth.forms import UserCreationForm
@@ -15,20 +16,14 @@ def index(response):
 def home(response):
     return render(response, "main/home.html", {});
 
-
+@method_decorator(staff_member_required, name='dispatch')
 class MachineListView(ModelFormSetView):
     model = Machine
     form_class = MachineForm
     paginate_by = 100
     template_name = 'main/manage.html'
     fields = ['id', 'Status', 'Name', 'HostName', 'Location', 'Description']
-    data = {
-        'form-TOTAL_FORMS': '1',
-        'form-INITIAL_FORMS': '0',
-        'form-MAX_NUM_FORMS': '',
-        'form-0-title': '',
-        'form-0-pub_date': '',
-    }
+
 
 def register(response):
     if response.method == "POST":
