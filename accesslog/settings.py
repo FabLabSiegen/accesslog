@@ -32,6 +32,8 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 # Application definition
 
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
 INSTALLED_APPS = [
     'rest_framework',
     'django.contrib.admin',
@@ -43,6 +45,8 @@ INSTALLED_APPS = [
     'utilities.apps.MainConfig',
     'print.apps.HistoryConfig',
     'rest.apps.RestConfig',
+    'extra_views',
+    'crispy_forms',
 ]
 
 REST_FRAMEWORK = {

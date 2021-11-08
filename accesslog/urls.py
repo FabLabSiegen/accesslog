@@ -36,6 +36,7 @@ router.register(r'mediafile', r.PrintMediaFileViewSet, basename="PrintMediaFile"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('register/', v.register, name="utilities"),
+    path('manage/', v.MachineListView.as_view(), name="Machine-List"),
     path('', include('utilities.urls')),
     path('', include("django.contrib.auth.urls")),
     path('api/', include(router.urls)),

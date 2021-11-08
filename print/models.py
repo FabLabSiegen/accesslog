@@ -29,10 +29,10 @@ class MachineCategory(models.Model):
 
 class Machine(models.Model):
     Category = models.ForeignKey(MachineCategory, on_delete=models.SET_NULL, null=True)
-    Status = models.TextField()
-    Name = models.TextField()
-    HostName = models.TextField()
-    Location = models.TextField()
+    Status = models.CharField(max_length=100)
+    Name = models.CharField(max_length=100)
+    HostName = models.CharField(max_length=100)
+    Location = models.CharField(max_length=100)
     Description = models.TextField()
     User = models.ManyToManyField(User, through='AssignedUsers')
 

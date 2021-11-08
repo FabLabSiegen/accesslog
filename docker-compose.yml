@@ -17,8 +17,7 @@ services:
     restart: unless-stopped
     ports:
       - 5000:5000
-    volumes:
-      - octoprint:/octoprint
+      - 1883:1883
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
