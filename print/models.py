@@ -8,7 +8,7 @@ def get_sentinel_user():
 class SafetyBriefing(models.Model):
     Kind = models.TextField(max_length=500)
     ValidityPeriod = models.IntegerField()
-    Document = models.FileField()
+    Document = models.FileField(upload_to='safetybriefings')
 
 class FabLabUser(models.Model):
     Name = models.TextField(max_length=100)
@@ -41,19 +41,26 @@ class AssignedUsers(models.Model):
     Machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
 
 class ThreeDimensionalModel(models.Model):
-    File = models.FilePathField()
-    Owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='Owner')
-    Uploaded = models.DateTimeField()
+    Name = models.TextField()
+    FileName = models.TextField()
+    Size = models.TextField()
+    File = models.FileField(upload_to='models')
+    Owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, related_name='ModelOwner')
+    Uploaded = models.DateTimeField(auto_now_add=True)
     Previous = models.ForeignKey("self", on_delete=models.SET_NULL, default=None, null=True)
     SharedWithUser = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='SharedWithUser')
 
 class GCode(models.Model):
+    Name = models.TextField()
+    FileName = models.TextField()
+    Size = models.TextField()
     ThreeDimensionalModel = models.ForeignKey(ThreeDimensionalModel, on_delete=models.SET_NULL, null=True, default=None)
-    FileLocation = models.FilePathField()
+    File = models.FileField(upload_to='gcode')
     EstimatedPrintingTime = models.TimeField()
     UsedFilamentInG = models.FloatField()
     UsedFilamentInMm = models.FloatField()
-    Uploaded = models.DateTimeField()
+    Owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, related_name='GcodeOwner')
+    Uploaded = models.DateTimeField(auto_now_add=True)
     SharedWithUser = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
 class PrintJob(models.Model):
@@ -74,12 +81,13 @@ class PrintTemperatureHistory(models.Model):
 
 class PrintMediaFile(models.Model):
     PrintJob = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
-    FileLocation = models.FilePathField()
+    File = models.FileField(upload_to='printmedia')
     Description = models.TextField()
+    Owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, related_name='PrintMediaOwner')
 
 class SlicingConfig(models.Model):
     GCode = models.ForeignKey(GCode,on_delete=models.CASCADE)
-    ConfigLocation = models.FilePathField()
+    Config = models.JSONField()
 
 class Rating(models.Model):
     User = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user))

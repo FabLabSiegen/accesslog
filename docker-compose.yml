@@ -2,23 +2,26 @@ version: "3.9"
 
 services:
   db:
-    restart: always
     image: postgres
-    ports:
-    - "5432:5432"
+    restart: always
     volumes:
       - ./data/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_HOST_AUTH_METHOD=trust
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
     ports:
-      - "8000:8000"
+      - 8000:8000
+    env_file:
+      - .env.dev
     depends_on:
       - db
+volumes:
+  postgres_data:
