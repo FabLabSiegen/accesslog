@@ -1,21 +1,26 @@
+
+
 from django.shortcuts import render
-
-# Create your views here.
+import django
+django.setup()
+from ast import literal_eval
+import json
+from print.models import Machine, PrintJob , PrintTemperatureHistory
+from django.utils import timezone
 def handle_msg(topic, message):
-
-    if str(topic).endswith("/temperature/tool0"):
+    printer = topic.split("/")[2]
+    p_id = Machine.objects.get(Name=printer).id
+    m = message.decode("Utf-8")
+    try:
+        print(json.loads(m)["_timestamp"])
+    except:
+        print("no json")
+    try:
+        PrintJob.objects.get(Machine_id=p_id)
+        if PrintJob.objects.get(Machine_id=p_id).State == 1:
+            # PrintTemperatureHistory.objects.create(PrintJob_id=p_id, ToolTarget=message.)
+            pass
+    except:
         pass
-    elif str(topic).endswith("/temperature/bed"):
-        pass
-    elif str(topic).endswith("/event/ZChange"):
-        pass
-    elif str(topic).endswith("/event/ZChange"):
-        pass
-    elif str(topic).endswith("/event/ZChange"):
-        pass
-    elif str(topic).endswith("/event/ZChange"):
-        pass
-    elif str(topic).endswith("/event/ZChange"):
-        pass
-    else:
-        return "no input"
+        # print("does not exist")
+        # PrintJob.objects.create(Start=timezone.now(), End=timezone.now(), GCode_id=None,State=1, Machine_id=p_id,User_id=1)
