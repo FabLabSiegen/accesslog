@@ -32,6 +32,7 @@ class Machine(models.Model):
     Status = models.CharField(max_length=100)
     Name = models.CharField(max_length=100)
     DomainName = models.CharField(max_length=100)
+    Location = models.CharField(max_length=100)
     ApiKey = models.CharField(max_length=100)
     Description = models.TextField()
     User = models.ManyToManyField(User, through='AssignedUsers')

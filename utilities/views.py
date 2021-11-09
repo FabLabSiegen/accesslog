@@ -22,7 +22,7 @@ class MachineListView(ModelFormSetView):
     form_class = MachineForm
     paginate_by = 100
     template_name = 'main/manage.html'
-    fields = ['id', 'Name', 'Status', 'DomainName', 'ApiKey', 'Description']
+    fields = ['id', 'Name', 'Status', 'DomainName', 'ApiKey','Location', 'Description']
 
 
 def register(response):
