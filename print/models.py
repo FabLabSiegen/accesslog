@@ -72,12 +72,16 @@ class PrintJob(models.Model):
     End = models.DateTimeField()
     State = models.IntegerField()
 
-class PrintTemperatureHistory(models.Model):
+class BedTemperatureHistory(models.Model):
     PrintJob = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
-    ToolTarget = models.FloatField()
-    ToolActual = models.FloatField()
-    BedTarget = models.FloatField()
-    BedActual = models.FloatField()
+    Target = models.FloatField()
+    Actual = models.FloatField()
+    TimeStamp = models.DateTimeField()
+
+class ToolTemperatureHistory(models.Model):
+    PrintJob = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
+    Target = models.FloatField()
+    Actual = models.FloatField()
     TimeStamp = models.DateTimeField()
 
 class PrintMediaFile(models.Model):
