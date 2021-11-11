@@ -1,4 +1,4 @@
-import time
+import os
 
 import paho.mqtt.client as mqtt
 from print.views import *
@@ -15,6 +15,6 @@ client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
-client.username_pw_set(username="fablabmqtt",password="***REMOVED***")
+client.username_pw_set(username=os.environ.get("MQTT_USER", "mqtt"),password=os.environ.get("MQTT_PASSWORD", "mqtt"))
 
-client.connect("mqtt.fablab-siegen.de", 1883, 60)
+client.connect(os.environ.get("MQTT_URL", "localhost"), 1883, 60)
