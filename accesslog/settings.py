@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'utilities.apps.MainConfig',
-    'print.apps.HistoryConfig',
+    'print.apps.PrintConfig',
     'rest.apps.RestConfig',
     'extra_views',
     'crispy_forms',
