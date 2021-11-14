@@ -189,15 +189,19 @@ class PrintMediaFileByPrintJob(APIView):
             response = {'message':'There are no Media Files related to that Print Job'}
             return Response(response, status=404)
 
-def get_session(api_key):
+def post_file(api_key, file):
     hed = {'Authorization': 'Bearer ' + api_key}
-    data = {'passive' : 1}
+    data = {'file':file}
 
-    url = 'http://octoprint:5000/api/login'
-    response = requests.post(url,data=data, headers=hed)
+    # !!! Needs to be changed in production to actual Host Address -> data is in Model Machine
+    url = 'http://octoprint:5000/api/files/sdcard'
+    try:
+        response = requests.post(url,files=data, headers=hed)
+    except Exception as e:
+        print(e)
 
     #return session id
-    return json.loads(response.text)["session"]
+    return json.loads(response.text)
 
 class StartPrintJob(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -207,16 +211,15 @@ class StartPrintJob(APIView):
 
         file = request.FILES.get('File')
         Owner=self.request.user.id
+        response = {'Owner':Owner}
         api_key = Machine.objects.get(id=request.data['Machine']).ApiKey
         try:
-            session = get_session(api_key)
-            print(session)
+            response = post_file(api_key, file)
+            print(response)
         except Exception as e:
             print(e)
-        response = {'Owner':Owner}
+
         return Response(response, status=200)
-
-
 
 
 class UserViewSet(viewsets.ModelViewSet):
