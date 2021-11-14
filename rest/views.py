@@ -5,6 +5,7 @@ from rest.serializers import *
 from print.models import *
 from django.db.models import Q
 from rest_framework import viewsets
+import json, requests
 import os
 
 class ThreeDimensionalModelViewSet(viewsets.ModelViewSet):
@@ -187,6 +188,34 @@ class PrintMediaFileByPrintJob(APIView):
         else:
             response = {'message':'There are no Media Files related to that Print Job'}
             return Response(response, status=404)
+
+def get_session(api_key):
+    hed = {'Authorization': 'Bearer ' + api_key}
+    data = {'passive' : 1}
+
+    url = 'http://octoprint:5000/api/login'
+    response = requests.post(url,data=data, headers=hed)
+
+    #return session id
+    return json.loads(response.text)["session"]
+
+class StartPrintJob(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = StartPrintJobSerializer
+
+    def post(self, request, *args, **kwargs):
+
+        file = request.FILES.get('File')
+        Owner=self.request.user.id
+        api_key = Machine.objects.get(id=request.data['Machine']).ApiKey
+        try:
+            session = get_session(api_key)
+            print(session)
+        except Exception as e:
+            print(e)
+        response = {'Owner':Owner}
+        return Response(response, status=200)
+
 
 
 

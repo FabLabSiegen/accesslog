@@ -7,3 +7,4 @@ paho-mqtt>=1.6.1
 django-extra-views
 django-crispy-forms
 pytz
+requests

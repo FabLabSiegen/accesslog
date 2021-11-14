@@ -32,9 +32,11 @@ def check_topic(topic):
 
 
 def handle_msg(topic, message):
+    p_exists = None
     printer = topic.split("/")[2]
     printer_id = Machine.objects.get(Name=printer).id
     m = message.decode("Utf-8")
+    print(topic)
 
     # Check event of topic
     event = check_topic(topic)
@@ -46,8 +48,10 @@ def handle_msg(topic, message):
         try:
             PrintJob.objects.get(Machine_id=printer_id, State=1)
             p_exists = True
-        except:
+        except PrintJob.DoesNotExist:
             p_exists = False
+        except Exception as e:
+            print(e)
 
         try:
             if p_exists:
@@ -66,8 +70,10 @@ def handle_msg(topic, message):
         try:
             PrintJob.objects.get(Machine_id=printer_id, State=1)
             p_exists = True
-        except:
+        except PrintJob.DoesNotExist:
             p_exists = False
+        except Exception as e:
+            print(e)
 
         try:
             if p_exists:
@@ -96,20 +102,25 @@ def handle_msg(topic, message):
         try:
             PrintJob.objects.get(Machine_id=printer_id, State=1)
             p_exists = True
-        except:
+        except PrintJob.DoesNotExist:
             p_exists = False
+        except Exception as e:
+            print(e)
 
-        # If Temperature is bed info
-        if p_exists:
-            if tool_bed == "bed":
-                try:
-                    BedTemperatureHistory.objects.create(PrintJob_id=PrintJob.objects.get(Machine_id=printer_id, State=1).id, Target=target, Actual=actual, TimeStamp=timestamp)
-                except Exception as e:
-                    print(e)
+        try:
+            if p_exists:
+                # If Temperature is bed info
+                if tool_bed == "bed":
+                    try:
+                        BedTemperatureHistory.objects.create(PrintJob_id=PrintJob.objects.get(Machine_id=printer_id, State=1).id, Target=target, Actual=actual, TimeStamp=timestamp)
+                    except Exception as e:
+                        print(e)
 
-            # If Temperature is tool info
-            elif tool_bed == "tool0":
-                try:
-                    ToolTemperatureHistory.objects.create(PrintJob_id=PrintJob.objects.get(Machine_id=printer_id, State=1).id, Target=target, Actual=actual, TimeStamp=timestamp)
-                except Exception as e:
-                    print(e)
+                # If Temperature is tool info
+                elif tool_bed == "tool0":
+                    try:
+                        ToolTemperatureHistory.objects.create(PrintJob_id=PrintJob.objects.get(Machine_id=printer_id, State=1).id, Target=target, Actual=actual, TimeStamp=timestamp)
+                    except Exception as e:
+                        print(e)
+        except Exception as e:
+            print(e)

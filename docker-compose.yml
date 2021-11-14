@@ -18,6 +18,8 @@ services:
     ports:
       - 5000:5000
       - 1883:1883
+    volumes:
+      - octoprint:/octoprint
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000 --noreload

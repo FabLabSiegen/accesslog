@@ -32,6 +32,13 @@ class PrintMediaFileSerializer(serializers.ModelSerializer):
         fields = ['id','PrintJob','File','Owner']
         read_only_fields = ['Owner']
 
+class StartPrintJobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StartGCode
+        fields = ['id', 'File', 'Machine' ,'Owner']
+        read_only_fields = ['Owner']
+
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
