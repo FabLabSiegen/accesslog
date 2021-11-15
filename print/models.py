@@ -64,10 +64,7 @@ class GCode(models.Model):
     Uploaded = models.DateTimeField(auto_now_add=True)
     SharedWithUser = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
-class StartGCode(models.Model):
-    Machine = models.ForeignKey(Machine, on_delete=models.SET_NULL, null=True)
-    GCode = models.ForeignKey(GCode, on_delete=models.SET_NULL, null=True)
-    Owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, related_name='StartGcodeOwner')
+
 
 class PrintJob(models.Model):
     User = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user))
@@ -104,3 +101,12 @@ class Rating(models.Model):
     PrintJob = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
     Comment = models.TextField(max_length=500)
     Rating = models.IntegerField()
+
+class StartGCode(models.Model):
+    Machine = models.ForeignKey(Machine, on_delete=models.SET_NULL, null=True)
+    GCode = models.ForeignKey(GCode, on_delete=models.SET_NULL, null=True)
+    Owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, related_name='StartGcodeOwner')
+
+class StopGCode(models.Model):
+    PrintJob = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
+    Owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, related_name='StopGcodeOwner')

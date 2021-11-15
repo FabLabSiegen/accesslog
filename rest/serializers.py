@@ -38,6 +38,12 @@ class StartPrintJobSerializer(serializers.ModelSerializer):
         fields = ['id', 'GCode', 'Machine' ,'Owner']
         read_only_fields = ['Owner']
 
+class StopPrintJobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StopGCode
+        fields = ['id', 'PrintJob', 'Owner']
+        read_only_fields = ['Owner']
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

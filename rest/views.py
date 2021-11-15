@@ -246,8 +246,42 @@ class StartPrintJob(APIView):
                     print("PrintJob created")
             except Exception as e:
                 print(e)
-
         return response
+
+def stop_job(api_key, host):
+    hed = {'Authorization': 'Bearer ' + api_key, 'content-type': 'application/json'}
+    data = {"command": "cancel"}
+
+    url = 'http://'+host+':5000/api/job'
+    try:
+        response = requests.post(url,data=json.dumps(data), headers=hed)
+        return Response(response, status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        response = {'error':str(e)}
+        return Response(response, status=421)
+
+class StopPrintJob(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = StopPrintJobSerializer
+
+
+    def post(self, request, *args, **kwargs):
+
+        print(request.data)
+        machine_id = PrintJob.objects.get(id=request.data['PrintJob']).Machine.id
+        try:
+            api_key = Machine.objects.get(id=machine_id).ApiKey
+            host = Machine.objects.get(id=machine_id).DomainName
+        except Exception as e:
+            return Response(str(e), status=500)
+
+        try:
+            response = stop_job(api_key, host)
+            return response
+        except requests.exceptions.RequestException as e:
+            response = {'error':str(e)}
+            return Response(response, status=421)
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
