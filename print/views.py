@@ -56,8 +56,9 @@ def handle_msg(topic, message):
                 if p_exists:
                     pj = PrintJob.objects.get(Machine_id=printer_id, State=1)
                     pj.State = 0
+                    pj.End = timezone.now()
                     pj.save()
-                    print("PrintJob State = 0")
+                    print("PrintJob ended -> State 0")
             except Exception as e:
                 print(e)
         elif state == "PRINTING":

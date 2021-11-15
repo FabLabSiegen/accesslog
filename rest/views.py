@@ -197,8 +197,9 @@ def post_file(api_key, file, host):
     url = 'http://'+host+':5000/api/files/sdcard'
     try:
         response = requests.post(url,files=data, headers=hed)
+
         return Response(json.loads(response.text), status=response.status_code)
-    except ConnectionError as e:
+    except requests.exceptions.RequestException as e:
         response = {'error':str(e)}
         return Response(response, status=421)
     except Exception as e:
