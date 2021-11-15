@@ -197,12 +197,13 @@ def post_file(api_key, file, host):
     url = 'http://'+host+':5000/api/files/sdcard'
     try:
         response = requests.post(url,files=data, headers=hed)
-        return Response(json.loads(response.text), status=200)
+        return Response(json.loads(response.text), status=response.status_code)
     except ConnectionError as e:
         response = {'error':str(e)}
         return Response(response, status=421)
     except Exception as e:
         response = {'error':str(e)}
+        print (e)
         return Response(response, status=500)
 
 
@@ -212,33 +213,8 @@ class StartPrintJob(APIView):
 
     def post(self, request, *args, **kwargs):
         p_exists = None
-        file = None
-        try:
-            file = GCode.objects.get(id=request.data['GCode']).File
-        except Exception as e:
-            print(e)
+        file = GCode.objects.get(id=request.data['GCode']).File
         owner=self.request.user.id
-
-        try:
-            PrintJob.objects.get(Machine_id=request.data['Machine'], State=1)
-            p_exists = True
-        except PrintJob.DoesNotExist:
-            p_exists = False
-        except Exception as e:
-            print(e)
-
-        try:
-            if not p_exists:
-                PrintJob.objects.create(
-                    Start=timezone.now(),
-                    End=timezone.now(),
-                    GCode_id=request.data['GCode'],
-                    State=1, Machine_id=request.data['Machine'],
-                    User_id=owner
-                )
-                print("PrintJob created")
-        except Exception as e:
-            print(e)
 
         try:
             api_key = Machine.objects.get(id=request.data['Machine']).ApiKey
@@ -247,6 +223,29 @@ class StartPrintJob(APIView):
             return Response(str(e), status=500)
 
         response = post_file(api_key, file, host)
+        print(response.status_code)
+        if response.status_code == 201:
+            try:
+                PrintJob.objects.get(Machine_id=request.data['Machine'], State=1)
+                p_exists = True
+            except PrintJob.DoesNotExist:
+                p_exists = False
+            except Exception as e:
+                print(e)
+
+            try:
+                if not p_exists:
+                    PrintJob.objects.create(
+                        Start=timezone.now(),
+                        End=timezone.now(),
+                        GCode_id=request.data['GCode'],
+                        State=1, Machine_id=request.data['Machine'],
+                        User_id=owner
+                    )
+                    print("PrintJob created")
+            except Exception as e:
+                print(e)
+
         return response
 
 class UserViewSet(viewsets.ModelViewSet):
