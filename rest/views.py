@@ -6,6 +6,7 @@ from print.models import *
 from django.db.models import Q
 from rest_framework import viewsets
 import json, requests
+from django.utils import timezone
 import os
 
 class ThreeDimensionalModelViewSet(viewsets.ModelViewSet):
@@ -189,38 +190,64 @@ class PrintMediaFileByPrintJob(APIView):
             response = {'message':'There are no Media Files related to that Print Job'}
             return Response(response, status=404)
 
-def post_file(api_key, file):
+def post_file(api_key, file, host):
     hed = {'Authorization': 'Bearer ' + api_key}
     data = {'file':file}
 
-    # !!! Needs to be changed in production to actual Host Address -> data is in Model Machine
-    url = 'http://octoprint:5000/api/files/sdcard'
+    url = 'http://'+host+':5000/api/files/sdcard'
     try:
         response = requests.post(url,files=data, headers=hed)
+        return Response(json.loads(response.text), status=200)
+    except ConnectionError as e:
+        response = {'error':str(e)}
+        return Response(response, status=421)
     except Exception as e:
-        print(e)
+        response = {'error':str(e)}
+        return Response(response, status=500)
 
-    #return session id
-    return json.loads(response.text)
 
 class StartPrintJob(APIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = StartPrintJobSerializer
 
     def post(self, request, *args, **kwargs):
-
-        file = request.FILES.get('File')
-        Owner=self.request.user.id
-        response = {'Owner':Owner}
-        api_key = Machine.objects.get(id=request.data['Machine']).ApiKey
+        p_exists = None
+        file = None
         try:
-            response = post_file(api_key, file)
-            print(response)
+            file = GCode.objects.get(id=request.data['GCode']).File
+        except Exception as e:
+            print(e)
+        owner=self.request.user.id
+
+        try:
+            PrintJob.objects.get(Machine_id=request.data['Machine'], State=1)
+            p_exists = True
+        except PrintJob.DoesNotExist:
+            p_exists = False
         except Exception as e:
             print(e)
 
-        return Response(response, status=200)
+        try:
+            if not p_exists:
+                PrintJob.objects.create(
+                    Start=timezone.now(),
+                    End=timezone.now(),
+                    GCode_id=request.data['GCode'],
+                    State=1, Machine_id=request.data['Machine'],
+                    User_id=owner
+                )
+                print("PrintJob created")
+        except Exception as e:
+            print(e)
 
+        try:
+            api_key = Machine.objects.get(id=request.data['Machine']).ApiKey
+            host = Machine.objects.get(id=request.data['Machine']).DomainName
+        except Exception as e:
+            return Response(str(e), status=500)
+
+        response = post_file(api_key, file, host)
+        return response
 
 class UserViewSet(viewsets.ModelViewSet):
     """

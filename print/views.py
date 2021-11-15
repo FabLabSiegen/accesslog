@@ -23,9 +23,7 @@ def check_topic(topic):
         
     if event == "PrintDone":
         return event
-    elif event == "PrintStarted":
-        return event
-    elif event == "PrintStarted":
+    elif event == "PrinterStateChanged":
         return event
     elif temp == "temperature":
         return temp
@@ -36,53 +34,48 @@ def handle_msg(topic, message):
     printer = topic.split("/")[2]
     printer_id = Machine.objects.get(Name=printer).id
     m = message.decode("Utf-8")
-    print(topic)
 
     # Check event of topic
     event = check_topic(topic)
     
-    if event == "PrintStarted":
+    if event == "PrinterStateChanged":
         # Event: Printer is done with PrintJob
-        print("Print started")
-        # Check if PrintJob already exists
-        try:
-            PrintJob.objects.get(Machine_id=printer_id, State=1)
-            p_exists = True
-        except PrintJob.DoesNotExist:
-            p_exists = False
-        except Exception as e:
-            print(e)
+        print("Print state changed")
+        state = json.loads(m)["state_id"]
+        if state == "OPERATIONAL":
+            # Check if Printer is already set as operational
+            try:
+                PrintJob.objects.get(Machine_id=printer_id, State=1)
+                p_exists = True
+            except PrintJob.DoesNotExist:
+                p_exists = False
+            except Exception as e:
+                print(e)
 
-        try:
-            if p_exists:
-                print("PrintJob already exists")
-            else:
-                PrintJob.objects.create(Start=timezone.now(), End=timezone.now(), GCode_id=None,State=1, Machine_id=printer_id,User_id=1)
-                print("PrintJob created")
-        except Exception as e:
-            print(e)
+            try:
+                if p_exists:
+                    pj = PrintJob.objects.get(Machine_id=printer_id, State=1)
+                    pj.State = 0
+                    pj.save()
+                    print("PrintJob State = 0")
+            except Exception as e:
+                print(e)
+        elif state == "PRINTING":
+            # Check if Printer is already set printing
+            try:
+                PrintJob.objects.get(Machine_id=printer_id, State=1)
+                p_exists = True
+            except PrintJob.DoesNotExist:
+                p_exists = False
+            except Exception as e:
+                print(e)
 
-    elif event == "PrintDone":
-        # Event: Printer is done with PrintJob
-        print("Print Done")
-
-        # Check if PrintJob exists
-        try:
-            PrintJob.objects.get(Machine_id=printer_id, State=1)
-            p_exists = True
-        except PrintJob.DoesNotExist:
-            p_exists = False
-        except Exception as e:
-            print(e)
-
-        try:
-            if p_exists:
-                pj = PrintJob.objects.get(Machine_id=printer_id, State=1)
-                pj.State = 0
-                pj.save()
-                print("PrintJob State = 0")
-        except Exception as e:
-            print(e)
+            try:
+                if not p_exists:
+                    PrintJob.objects.create(Start=timezone.now(), End=timezone.now(), GCode_id=None,State=1, Machine_id=printer_id,User_id=1)
+                    print("PrintJob created")
+            except Exception as e:
+                print(e)
 
     elif event == "temperature":
         # Event: Temperature is sent

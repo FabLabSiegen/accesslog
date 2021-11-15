@@ -66,7 +66,7 @@ class GCode(models.Model):
 
 class StartGCode(models.Model):
     Machine = models.ForeignKey(Machine, on_delete=models.SET_NULL, null=True)
-    File = models.FileField()
+    GCode = models.ForeignKey(GCode, on_delete=models.SET_NULL, null=True)
     Owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, related_name='StartGcodeOwner')
 
 class PrintJob(models.Model):
