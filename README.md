@@ -1,7 +1,12 @@
 # accesslog
+
+## Summary
 Access and Documentation System for the Fab Lab
 
 The Project is based on Django.
+
+## Requirements
+## Installation
 
 ## API Endpoints
 
@@ -10,7 +15,7 @@ The Project is based on Django.
   * allows to start a new Print Job providing: GCode ID, Machine ID
   * Returns on successful request: `HTTP 201 Create`
 
-Successful Response:
+Example successful response:
 ```
 {
     "done": false,
@@ -41,7 +46,7 @@ Successful Response:
   * Permissions: Owner of Print Job
   * Returns on successful request: `HTTP 204 No Content`
 
-Successful Response:
+Example successful response:
 ```
 []
 ```
@@ -51,7 +56,7 @@ Successful Response:
     * returns all users
     * Returns on successful request: `HTTP 200 Ok`
 
-Successful Response:
+Example successful response:
 ```
 {
     "count": 1,
@@ -72,7 +77,7 @@ Successful Response:
     * returns all groups
     * Returns on successful request: `HTTP 200 Ok`
 
-Successful Response:
+Example successful response:
 ```
 {
     "count": 1,
@@ -91,7 +96,7 @@ Successful Response:
     * returns all models that are owned by the user or shared with the user
     * Returns on successful request: `HTTP 200 Ok`
 
-Successful Response:
+Example successful response _(Logged in UserID:1)_:
 ```
 [
     {
@@ -122,7 +127,7 @@ Successful Response:
     * returns single model with id provided the user is owner or the model is shared with the user
     * Returns on successful request: `HTTP 200 Ok`
 
-Successful Response:
+Example successful response _(?id=1, Logged in UserID:1)_:
 ```
 {
     "id": 1,
@@ -138,28 +143,284 @@ Successful Response:
 ```
 * GET `http://localhost:8000/api/models/?name=MODELNAME`
     * returns all models with that name provided the user is owner or the model is shared with the user
+    * Returns on successful request: `HTTP 200 Ok`
+
+Example successful response _(?name=ghost, Logged in UserID:1)_:
+```
+[
+    {
+        "id": 1,
+        "Name": "ghost",
+        "FileName": "ghost.stl",
+        "Size": "3501284",
+        "File": "/upload/models/ghost_92lAXd9.stl",
+        "Uploaded": "2021-10-19T10:57:44.211590+02:00",
+        "Owner": 1,
+        "Previous": null,
+        "SharedWithUser": null
+    },
+    {
+        "id": 2,
+        "Name": "ghost",
+        "FileName": "ghost.stl",
+        "Size": "3501284",
+        "File": "/upload/models/ghost_lsaRxE9.stl",
+        "Uploaded": "2021-10-19T10:58:13.225555+02:00",
+        "Owner": 1,
+        "Previous": null,
+        "SharedWithUser": 2
+    }
+]
+```
 * GET `http://localhost:8000/api/models/MODELID/`
     * returns single model with all details
+    * Returns on successful request: `HTTP 200 Ok`
+
+Example successful response _(MODELID=1)_:
+```
+{
+    "id": 1,
+    "Name": "ghost",
+    "FileName": "ghost.stl",
+    "Size": "3501284",
+    "File": "http://localhost:8000/upload/models/ghost_92lAXd9.stl",
+    "Uploaded": "2021-10-19T10:57:44.211590+02:00",
+    "Owner": 1,
+    "Previous": null,
+    "SharedWithUser": null
+}
+```
 * POST `http://localhost:8000/api/models/` 
     * allows adding of new models providing: File, _Previous (optional)_, _SharedWithUser (optional)_
+    * Returns on successful request: `HTTP 201 Created`
+
+Example successful response _(Logged in UserID:1)_:
+```
+{
+    "id": 7,
+    "Name": "ghost",
+    "FileName": "ghost.stl",
+    "Size": "3501284",
+    "File": "/upload/models/ghost.stl",
+    "Uploaded": "2021-11-16T12:13:06.155228+01:00",
+    "Owner": 1,
+    "Previous": 4,
+    "SharedWithUser": 2
+}
+```
 ### GCode: 
 * GET `http://localhost:8000/api/gcode/`
     * returns all gcodes that are owned by the user or shared with the user
+    * Returns on successful request: `HTTP 200 OK`
+
+Example successful response _(Logged in UserID:1)_:
+```
+[
+    {
+        "id": 8,
+        "Name": "boat",
+        "FileName": "boat.gcode",
+        "Size": "562833",
+        "File": "/upload/gcode/boat_pWiZ5oi.gcode",
+        "Uploaded": "2021-11-15T12:21:47.197334+01:00",
+        "UsedFilamentInG": 0.0,
+        "Owner": 1,
+        "UsedFilamentInMm": 0.0,
+        "SharedWithUser": null,
+        "EstimatedPrintingTime": "11:21:47.187739",
+        "ThreeDimensionalModel": null
+    },
+    {
+        "id": 9,
+        "Name": "boat",
+        "FileName": "boat.gcode",
+        "Size": "562833",
+        "File": "/upload/gcode/boat_1HhpkoU.gcode",
+        "Uploaded": "2021-11-15T12:26:48.249209+01:00",
+        "UsedFilamentInG": 123.0,
+        "Owner": 1,
+        "UsedFilamentInMm": 2132.0,
+        "SharedWithUser": 3,
+        "EstimatedPrintingTime": "12:30:00",
+        "ThreeDimensionalModel": 1
+    }
+]
+```
+
 * GET `http://localhost:8000/api/gcode/?id=GCODEID`
     * returns single gcodes with id provided the user is owner or the model is shared with the user
+    * Returns on successful request: `HTTP 200 OK`
+
+Example successful response _(?id=1, Logged in UserID:1)_:
+```
+{
+    "id": 8,
+    "Name": "boat",
+    "FileName": "boat.gcode",
+    "Size": "562833",
+    "File": "/upload/gcode/boat_pWiZ5oi.gcode",
+    "Uploaded": "2021-11-15T12:21:47.197334+01:00",
+    "UsedFilamentInG": 0.0,
+    "Owner": 1,
+    "UsedFilamentInMm": 0.0,
+    "SharedWithUser": null,
+    "EstimatedPrintingTime": "11:21:47.187739",
+    "ThreeDimensionalModel": null
+}
+```
 * GET `http://localhost:8000/api/gcode/?name=GCODENAME`
     * returns all gcodes with that name provided the user is owner or the model is shared with the user
+    * Returns on successful request: `HTTP 200 OK`
+
+Example successful response _(?name=boat, Logged in UserID:1)_:
+```
+[
+    {
+        "id": 8,
+        "Name": "boat",
+        "FileName": "boat.gcode",
+        "Size": "562833",
+        "File": "/upload/gcode/boat_pWiZ5oi.gcode",
+        "Uploaded": "2021-11-15T12:21:47.197334+01:00",
+        "UsedFilamentInG": 0.0,
+        "Owner": 1,
+        "UsedFilamentInMm": 0.0,
+        "SharedWithUser": null,
+        "EstimatedPrintingTime": "11:21:47.187739",
+        "ThreeDimensionalModel": null
+    },
+    {
+        "id": 9,
+        "Name": "boat",
+        "FileName": "boat.gcode",
+        "Size": "562833",
+        "File": "/upload/gcode/boat_1HhpkoU.gcode",
+        "Uploaded": "2021-11-15T12:26:48.249209+01:00",
+        "UsedFilamentInG": 123.0,
+        "Owner": 1,
+        "UsedFilamentInMm": 2132.0,
+        "SharedWithUser": 3,
+        "EstimatedPrintingTime": "12:30:00",
+        "ThreeDimensionalModel": 1
+    }
+]
+```
 * GET `http://localhost:8000/api/gcode/MODELID/`
     * returns single model with all details
+    * Returns on successful request: `HTTP 200 OK`
+
+Example successful response _(MODELID=8)_:
+```
+{
+    "id": 8,
+    "Name": "boat",
+    "FileName": "boat.gcode",
+    "Size": "562833",
+    "File": "http://localhost:8000/upload/gcode/boat_pWiZ5oi.gcode",
+    "Uploaded": "2021-11-15T12:21:47.197334+01:00",
+    "UsedFilamentInG": 0.0,
+    "Owner": 1,
+    "UsedFilamentInMm": 0.0,
+    "SharedWithUser": null,
+    "EstimatedPrintingTime": "11:21:47.187739",
+    "ThreeDimensionalModel": null
+}
+```
+
 * POST `http://localhost:8000/api/gcode/`
     * allows adding of new models providing: File, UsedFilamentInG, UsedFilamentInMm, _SharedWithUser (optional)_, EstimatedPrintingTime, _ThreeDimensionalModel (optional)_
+    * Returns on successful request: `HTTP 201 Created`
+
+Example successful response _(Logged in UserID:1)_:
+```
+{
+    "id": 10,
+    "Name": "boat",
+    "FileName": "boat.gcode",
+    "Size": "562833",
+    "File": "/upload/gcode/boat_H4zM6xZ.gcode",
+    "Uploaded": "2021-11-16T13:43:18.135579+01:00",
+    "UsedFilamentInG": 123.0,
+    "Owner": 1,
+    "UsedFilamentInMm": 12323.0,
+    "SharedWithUser": 3,
+    "EstimatedPrintingTime": "12:33:00",
+    "ThreeDimensionalModel": 3
+}
+```
+
 ### Slicing Configs: 
 * GET `http://localhost:8000/api/slicingconfig/`
     * returns all sclicing configs in a list
+    * Configs in JSON format
+    * Returns on successful request: `HTTP 200 OK`
+
+Example successful response:
+```
+{
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "Config": [
+                {
+                    "dummy0": "1-770-736-8031 x56442",
+                    "dummy1": 1,
+                    "dummy2": "Leanne Graham",
+                    "dummy3": "Bret",
+                    "dummy4": "Sincere@april.biz"
+                }
+            ],
+            "GCode": 10
+        },
+        {
+            "Config": [
+                {
+                    "dummy0": "1-770-736-8031 x56442",
+                    "dummy1": 1,
+                    "dummy2": "Leanne Graham",
+                    "dummy3": "Bret",
+                    "dummy4": "Sincere@april.biz"
+                }
+            ],
+            "GCode": 9
+        }
+    ]
+}
+```
 * GET `http://localhost:8000/api/slicingconfig/GCODEID`
     * returns slicing config of gcode in json format
+    * Returns on successful request: `HTTP 200 OK`
+
+Example successful response:
+```
+[
+    {
+        "dummy0": "1-770-736-8031 x56442",
+        "dummy1": 1,
+        "dummy2": "Leanne Graham",
+        "dummy3": "Bret",
+        "dummy4": "Sincere@april.biz"
+    }
+]
+```
 * POST `http://localhost:8000/api/slicingconfig/`
     * allows to add new slicing config in json format providing: Config, GCodeID
+    * Returns on successful request: `HTTP 201 Created`
+
+Example successful response:
+```
+[
+    {
+        "dummy0": "1-770-736-8031 x56442",
+        "dummy1": 1,
+        "dummy2": "Leanne Graham",
+        "dummy3": "Bret",
+        "dummy4": "Sincere@april.biz"
+    }
+]
+```
 ### Print Jobs:
 * GET `http://localhost:8000/api/printjob/`
     * returns all PrintJobs in a list owned by logged in User
@@ -178,3 +439,8 @@ Successful Response:
 * POST `http://localhost:8000/api/mediafile/`
     * allows to add new PrintMediaFiles providing: PrintJobID, File
     * Logged in User also needs to be owner of related Print Job
+
+## Future improvement possibilities
+
+* Multithreading
+  * Multiple Instances of the paho mqtt client for each Machine

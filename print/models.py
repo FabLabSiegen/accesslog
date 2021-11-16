@@ -94,7 +94,7 @@ class PrintMediaFile(models.Model):
 
 class SlicingConfig(models.Model):
     GCode = models.ForeignKey(GCode,on_delete=models.CASCADE)
-    Config = models.JSONField()
+    Config = models.JSONField(null=False)
 
 class Rating(models.Model):
     User = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user))

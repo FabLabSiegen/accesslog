@@ -120,6 +120,27 @@ class SlicingConfigViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         return Response(instance.Config)
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        print(request.data['GCode'])
+        try:
+            SlicingConfig.objects.get(GCode_id=request.data['GCode'])
+            exists = True
+            print(True)
+        except:
+            exists = False
+
+        if exists:
+            response = {'error':'SlicingConfig of GCode already exists'}
+            return Response(response, status=409)
+        elif serializer.is_valid() and str(request.data['Config']) != 'null':
+            self.perform_create(serializer)
+
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response(serializer.errors, status=400)
+
 class PrintJobViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows PrintJobs to be viewed or edited.

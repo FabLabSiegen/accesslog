@@ -16,6 +16,7 @@ class GCodeSerializer(serializers.ModelSerializer):
         read_only_fields = ['Size', 'Name', 'FileName', 'Owner']
 
 class SlicingConfigSerializer(serializers.ModelSerializer):
+    Config = serializers.JSONField(required=True, allow_null=False)
     class Meta:
         model = SlicingConfig
         fields = ['Config', 'GCode']
