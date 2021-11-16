@@ -269,18 +269,23 @@ class StopPrintJob(APIView):
 
         print(request.data)
         machine_id = PrintJob.objects.get(id=request.data['PrintJob']).Machine.id
-        try:
-            api_key = Machine.objects.get(id=machine_id).ApiKey
-            host = Machine.objects.get(id=machine_id).DomainName
-        except Exception as e:
-            return Response(str(e), status=500)
+        owner = PrintJob.objects.get(id=request.data['PrintJob']).User.id
+        if owner == self.request.user.id:
+            try:
+                api_key = Machine.objects.get(id=machine_id).ApiKey
+                host = Machine.objects.get(id=machine_id).DomainName
+            except Exception as e:
+                return Response(str(e), status=500)
 
-        try:
-            response = stop_job(api_key, host)
-            return response
-        except requests.exceptions.RequestException as e:
-            response = {'error':str(e)}
-            return Response(response, status=421)
+            try:
+                response = stop_job(api_key, host)
+                return response
+            except requests.exceptions.RequestException as e:
+                response = {'error':str(e)}
+                return Response(response, status=421)
+        else:
+            response = {'message':'You are not allowed to stop this PrintJob because you do not own it'}
+            return Response(response, status=403)
 
 
 class UserViewSet(viewsets.ModelViewSet):
