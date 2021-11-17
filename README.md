@@ -1,17 +1,30 @@
 # accesslog
-
-## Summary
 Access and Documentation System for the Fab Lab that logs temperature data of ongoing prints and makes data available through an API and give the possibility to control prints
 
-The Project is based on Django.
-### Functionality
 * Manage existing Printers under http://localhost:8000/manage/ _(is_staff required)_
 * Register a new Account http://localhost:8000/register/ and Login to create a session http://localhost:8000/login/
 * Access the [REST API](#api-endpoints) in order to ...
-    * start/stop prints 
-    * get data from the system
-    * post data to the system
+  * start/stop prints
+  * get data from the system
+  * post data to the system
 * PrintJobs will be created internally in order to log temperature data of prints
+
+The Project is based on Django.
+## Table of contents
+* [Local development](#local-development)
+  * [Prerequisites](#prerequisites)
+  * [Installation](#installation)
+* [API Endpoints](#api-endpoints)
+  * [Start Print Jobs](#start-print-jobs)
+  * [Stop/Cancel Print Jobs](#stopcancel-print-jobs)
+  * [Users](#users)
+  * [Groups](#groups)
+  * [Models](#models)
+  * [GCode](#gcode)
+  * [Slicing Configs](#slicing-configs)
+  * [Print Jobs](#print-jobs)
+  * [Print Media Files](#print-media-files)
+* [Future improvement possibilities](#future-improvement-possibilities)
 
 ## Local development
 
