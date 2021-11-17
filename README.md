@@ -389,8 +389,8 @@ Example successful response:
     ]
 }
 ```
-* GET `http://localhost:8000/api/slicingconfig/GCODEID`
-    * returns slicing config of gcode in json format
+* GET `http://localhost:8000/api/slicingconfig/GCODEID/`
+    * returns slicing config of gcode in json format providing `GCODEID`
     * Returns on successful request: `HTTP 200 OK`
 
 Example successful response:
@@ -409,7 +409,7 @@ Example successful response:
     * allows to add new slicing config in json format providing: Config, GCodeID
     * Returns on successful request: `HTTP 201 Created`
 
-Example successful response:
+Example successful response (returns saved JSON Config):
 ```
 [
     {
@@ -424,21 +424,132 @@ Example successful response:
 ### Print Jobs:
 * GET `http://localhost:8000/api/printjob/`
     * returns all PrintJobs in a list owned by logged in User
+    * Returns on successful request: `HTTP 200 OK`
+
+Example successful response _(Logged in UserID:1)_:
+```
+[
+    {
+        "id": 1478,
+        "User": 1,
+        "Machine": 17,
+        "GCode": 9,
+        "Start": "2021-11-15T17:12:42.932473+01:00",
+        "End": "2021-11-15T17:17:37.710299+01:00",
+        "State": 0
+    },
+    {
+        "id": 1479,
+        "User": 1,
+        "Machine": 17,
+        "GCode": 9,
+        "Start": "2021-11-15T17:19:38.623075+01:00",
+        "End": "2021-11-15T17:24:33.783123+01:00",
+        "State": 0
+    }
+]
+```
 * GET `http://localhost:8000/api/printjob/PRINTJOBID`
     * returns detailed information about a single PrintJob
+    * Returns on successful request: `HTTP 200 OK`
+
+Example successful response _(PRINTJOBID:1476)_:
+```
+{
+    "id": 1476,
+    "User": 1,
+    "Machine": 17,
+    "GCode": 9,
+    "Start": "2021-11-15T16:04:04.274812+01:00",
+    "End": "2021-11-15T16:04:04.274820+01:00",
+    "State": 0
+}
+```
 * POST `http://localhost:8000/api/printjob/`
     * allows to add new PrintJobs providing: Machine, GCode, Start, End, State
+    * Returns on successful request: `HTTP 201 Created`
+  
+
+Example successful response _(Logged in UserID:1)_:
+```
+{
+    "id": 1494,
+    "User": 1,
+    "Machine": 12,
+    "GCode": 10,
+    "Start": "2021-11-17T10:51:00+01:00",
+    "End": "2021-11-17T10:53:00+01:00",
+    "State": 0
+}
+```
 
 ### Print Media Files:
 * GET `http://localhost:8000/api/mediafile/`
     * returns all mediafiles
+    * Returns on successful request: `HTTP 200 OK`
+
+
+Example successful response:
+```
+{
+    "count": 1,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 5,
+            "PrintJob": 1478,
+            "File": "http://localhost:8000/upload/printmedia/New_York_City_High-Quality_Wallpaper_Pack.jpg",
+            "Owner": 1
+        }
+    ]
+}
+```
 * GET `http://localhost:8000/api/mediafile/MEDIAFILEID`
-    * returns detailed information (including download link) about a single mediafile providing `MEDIAFILEID`
+    * returns detailed information (including download link) about a single Media File providing `MEDIAFILEID`
+    * Returns on successful request: `HTTP 200 OK`
+
+
+Example successful response:
+```
+{
+    "id": 5,
+    "PrintJob": 1478,
+    "File": "http://localhost:8000/upload/printmedia/New_York_City_High-Quality_Wallpaper_Pack.jpg",
+    "Owner": 1
+}
+```
 * GET `http://localhost:8000/api/mediafiles/PRINTJOBID`
     * returns all Media Files related to a PrintJob providing `PRINTJOBID`
+    * Returns on successful request: `HTTP 200 OK`
+
+
+Example successful response:
+```
+[
+    {
+        "id": 5,
+        "PrintJob": 1478,
+        "File": "/upload/printmedia/New_York_City_High-Quality_Wallpaper_Pack.jpg",
+        "Owner": 1
+    }
+]
+```
 * POST `http://localhost:8000/api/mediafile/`
     * allows to add new PrintMediaFiles providing: PrintJobID, File
     * Logged in User also needs to be owner of related Print Job
+    * Returns on successful request: `HTTP 201 Created`
+
+
+Example successful response _(Logged in UserID:1)_:
+```
+{
+    "id": 5,
+    "PrintJob": 1478,
+    "File": "http://localhost:8000/upload/printmedia/New_York_City_High-Quality_Wallpaper_Pack.jpg",
+    "Owner": 1
+}
+```
 
 ## Future improvement possibilities
 
