@@ -49,8 +49,8 @@ $ python manage.py migrate
 This will make sure the database has all the models to work with
 
 4. Go to http://localhost:5000/ and under `Settings > OCTOPRINT > Pluginmanager` install the MQTT Plugin _(by Gina Häußge)_
-5. Go to http://localhost:8000/register/ and create an Account
-6. Run Docker Compose again `docker-compose run --build`
+5. Run Docker Compose again `docker-compose run --build`
+6. Go to http://localhost:8000/register/ and create an Account
 
 The Api (http://localhost:8000/api/) should now be available to you. In order to access the "Manage Printers"-tab (http://localhost:8000/manage/) you need to access the database directly and change your just created User to is_staff=true and is_superuser=true
 
