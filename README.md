@@ -1,13 +1,17 @@
 # accesslog
 
 ## Summary
-Access and Documentation System for the Fab Lab
+Access and Documentation System for the Fab Lab that logs temperature data of ongoing prints and makes data available through an API and give the possibility to control prints
 
 The Project is based on Django.
 ### Functionality
 * Manage existing Printers under http://localhost:8000/manage/ _(is_staff required)_
 * Register a new Account http://localhost:8000/register/ and Login to create a session http://localhost:8000/login/
-* Access REST API in order to start/stop prints
+* Access the [REST API](#api-endpoints) in order to ...
+    * start/stop prints 
+    * get data from the system
+    * post data to the system
+* PrintJobs will be created internally in order to log temperature data of prints
 
 ## Local development
 
@@ -20,7 +24,7 @@ $ python --version
 3. If you don't have Python installed, install Python 3.9.0 or higher
 ### Installation
 1. Run the Docker Compose file `docker-compose run --build`
-2. Go to http://localhost:5000/ ,follow the basic setup wizard and create an account
+2. Go to http://localhost:5000/ and follow the basic setup wizard and create an account
 3. Create a terminal in your 'web'-container and run the following commands:
 
 ```sh
@@ -35,7 +39,6 @@ This will make sure the database has all the models to work with
 6. Run Docker Compose again `docker-compose run --build`
 
 The Api (http://localhost:8000/api/) should now be available to you. In order to access the "Manage Printers"-tab (http://localhost:8000/manage/) you need to access the database directly and change your just created User to is_staff=true and is_superuser=true
-## 
 
 ## API Endpoints
 
@@ -584,3 +587,9 @@ Example successful response _(Logged in UserID:1)_:
 
 * Multithreading
   * Multiple Instances of the paho mqtt client for each Machine
+  
+* Improvement to the Front-End
+  * Mobile responsive
+  * Increase User Experience (UX)
+  * Language localisation
+  * Increase overall visibility
