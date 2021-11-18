@@ -11,10 +11,10 @@ from utilities.forms import MachineForm
 
 
 def index(response):
-    return render(response, "main/base.html", {});
+    return render(response, "main/base.html", {})
 
 def home(response):
-    return render(response, "main/home.html", {});
+    return render(response, "main/home.html", {})
 
 @method_decorator(staff_member_required, name='dispatch')
 class MachineListView(ModelFormSetView):

@@ -276,7 +276,12 @@ def stop_job(api_key, host):
     url = 'http://'+host+':5000/api/job'
     try:
         response = requests.post(url,data=json.dumps(data), headers=hed)
-        return Response(json.loads(response.text), status=response.status_code)
+        try:
+            r = json.loads(response.text)
+            return Response(r, status=response.status_code)
+        except:
+            return Response(status=response.status_code)
+
     except requests.exceptions.RequestException as e:
         response = {'error':str(e)}
         return Response(response, status=421)

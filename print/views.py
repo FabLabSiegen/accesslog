@@ -135,17 +135,19 @@ def handle_msg(topic, message):
                 host = Machine.objects.get(Name="chaos").DomainName
                 apikey = Machine.objects.get(Name="chaos").ApiKey
                 printjob_id = PrintJob.objects.latest('id').id
-                latest = get_latest_timelapse_url(apikey, host)
+                latest_url = get_latest_timelapse_url(apikey, host)['url']
+                latest_name = get_latest_timelapse_url(apikey, host)['name']
 
-                file = download_from_path(apikey, host, latest)
+                file = download_from_path(apikey, host, latest_url, latest_name)
+
+                try:
+                    PrintMediaFile.objects.get(PrintJob_id=printjob_id, Description='timelapse')
+                except:
+                    PrintMediaFile.objects.create(File=file, Owner_id=1,Description='timelapse', PrintJob_id=printjob_id)
             except Exception as e:
-                print('exception')
                 print(e)
 
-            try:
-                PrintMediaFile.objects.get(PrintJob_id=printjob_id)
-            except:
-                PrintMediaFile.objects.create(File=file, Owner_id=1, PrintJob_id=printjob_id)
+
 
 
 def date_from_entry(entry):
@@ -158,25 +160,25 @@ def get_latest_timelapse_url(api_key, host):
     url = 'http://'+host+'/api/timelapse'
     try:
         response = requests.post(url,data=json.dumps(data), headers=hed)
-        latest = max(json.loads(response.text)['files'], key=date_from_entry)['url']
+        latest = max(json.loads(response.text)['files'], key=date_from_entry)
         return latest
     except requests.exceptions.RequestException as e:
         response = {'error':str(e)}
         return response
 
-def download_from_path(api_key, host, path):
+def download_from_path(api_key, host, path, name):
     hed = {'Authorization': 'Bearer ' + api_key, 'content-type': 'application/json'}
 
     url = 'http://'+host+ path
     try:
         response = requests.get(url, headers=hed)
         print(response)
-        f=open('name.mp4','wb')
+        f=open(name,'wb')
         for chunk in response.iter_content(chunk_size=255):
             if chunk: # filter out keep-alive new chunks
                 f.write(chunk)
         f.close()
-        f=open('name.mp4','rb')
+        f=open(name,'rb')
         return File(f)
     except requests.exceptions.RequestException as e:
         response = {'error':str(e)}
