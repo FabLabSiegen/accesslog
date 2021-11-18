@@ -1,11 +1,15 @@
 
 import django
+
 django.setup()
 import pytz
-import json
+import json, requests
+from rest_framework.response import Response
 from datetime import datetime
-from print.models import Machine, PrintJob, BedTemperatureHistory, ToolTemperatureHistory
+import urllib.request
+from print.models import Machine, PrintJob, BedTemperatureHistory, ToolTemperatureHistory, PrintMediaFile
 from django.utils import timezone
+from django.core.files import File
 
 def check_topic(topic):
     temp = None
@@ -25,8 +29,11 @@ def check_topic(topic):
         return event
     elif event == "PrinterStateChanged":
         return event
+    elif event == "plugin_octolapse_movie_done":
+        return event
     elif temp == "temperature":
         return temp
+
 
 
 def handle_msg(topic, message):
@@ -118,3 +125,59 @@ def handle_msg(topic, message):
                         print(e)
         except Exception as e:
             print(e)
+
+    elif event == "plugin_octolapse_movie_done":
+        # remove in production
+        if printer == "chaos":
+            print(printer)
+            try:
+                # Change name in production to be variable based on topic -> printer
+                host = Machine.objects.get(Name="chaos").DomainName
+                apikey = Machine.objects.get(Name="chaos").ApiKey
+                printjob_id = PrintJob.objects.latest('id').id
+                latest = get_latest_timelapse_url(apikey, host)
+
+                file = download_from_path(apikey, host, latest)
+            except Exception as e:
+                print('exception')
+                print(e)
+
+            try:
+                PrintMediaFile.objects.get(PrintJob_id=printjob_id)
+            except:
+                PrintMediaFile.objects.create(File=file, Owner_id=1, PrintJob_id=printjob_id)
+
+
+def date_from_entry(entry):
+    return datetime.strptime(entry['date'], '%Y-%m-%d %H:%M')
+
+def get_latest_timelapse_url(api_key, host):
+    hed = {'Authorization': 'Bearer ' + api_key, 'content-type': 'application/json'}
+    data = []
+
+    url = 'http://'+host+'/api/timelapse'
+    try:
+        response = requests.post(url,data=json.dumps(data), headers=hed)
+        latest = max(json.loads(response.text)['files'], key=date_from_entry)['url']
+        return latest
+    except requests.exceptions.RequestException as e:
+        response = {'error':str(e)}
+        return response
+
+def download_from_path(api_key, host, path):
+    hed = {'Authorization': 'Bearer ' + api_key, 'content-type': 'application/json'}
+
+    url = 'http://'+host+ path
+    try:
+        response = requests.get(url, headers=hed)
+        print(response)
+        f=open('name.mp4','wb')
+        for chunk in response.iter_content(chunk_size=255):
+            if chunk: # filter out keep-alive new chunks
+                f.write(chunk)
+        f.close()
+        f=open('name.mp4','rb')
+        return File(f)
+    except requests.exceptions.RequestException as e:
+        response = {'error':str(e)}
+        return response
