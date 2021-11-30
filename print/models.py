@@ -71,8 +71,8 @@ class PrintJob(models.Model):
     Machine = models.ForeignKey(Machine, on_delete=models.SET_NULL, null=True)
     GCode = models.ForeignKey(GCode, on_delete=models.SET_NULL, null=True)
     Start = models.DateTimeField()
-    End = models.DateTimeField()
-    State = models.IntegerField()
+    End = models.DateTimeField(null=True)
+    State = models.CharField(max_length=100)
 
 class BedTemperatureHistory(models.Model):
     PrintJob = models.ForeignKey(PrintJob, on_delete=models.CASCADE)

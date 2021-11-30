@@ -52,7 +52,7 @@ def handle_msg(topic, message):
         if state == "OPERATIONAL":
             # Check if Printer is already set as operational
             try:
-                PrintJob.objects.get(Machine_id=printer_id, State=1)
+                PrintJob.objects.get(Machine_id=printer_id, State='PRINTING')
                 p_exists = True
             except PrintJob.DoesNotExist:
                 p_exists = False
@@ -61,17 +61,17 @@ def handle_msg(topic, message):
 
             try:
                 if p_exists:
-                    pj = PrintJob.objects.get(Machine_id=printer_id, State=1)
-                    pj.State = 0
+                    pj = PrintJob.objects.get(Machine_id=printer_id, State='PRINTING')
+                    pj.State = 'FINISHED'
                     pj.End = timezone.now()
                     pj.save()
-                    print("PrintJob ended -> State 0")
+                    print("PrintJob ended -> State FINISHED")
             except Exception as e:
                 print(e)
         elif state == "PRINTING":
             # Check if Printer is already set printing
             try:
-                PrintJob.objects.get(Machine_id=printer_id, State=1)
+                PrintJob.objects.get(Machine_id=printer_id, State='PRINTING')
                 p_exists = True
             except PrintJob.DoesNotExist:
                 p_exists = False
@@ -80,7 +80,7 @@ def handle_msg(topic, message):
 
             try:
                 if not p_exists:
-                    PrintJob.objects.create(Start=timezone.now(), End=timezone.now(), GCode_id=None,State=1, Machine_id=printer_id,User_id=1)
+                    PrintJob.objects.create(Start=timezone.now(), End=None, GCode_id=None,State='PRINTING', Machine_id=printer_id,User_id=1)
                     print("PrintJob created")
             except Exception as e:
                 print(e)
@@ -101,7 +101,7 @@ def handle_msg(topic, message):
 
         # Check if Machine has related PrintJob
         try:
-            PrintJob.objects.get(Machine_id=printer_id, State=1)
+            PrintJob.objects.get(Machine_id=printer_id, State='PRINTING')
             p_exists = True
         except PrintJob.DoesNotExist:
             p_exists = False
@@ -113,39 +113,35 @@ def handle_msg(topic, message):
                 # If Temperature is bed info
                 if tool_bed == "bed":
                     try:
-                        BedTemperatureHistory.objects.create(PrintJob_id=PrintJob.objects.get(Machine_id=printer_id, State=1).id, Target=target, Actual=actual, TimeStamp=timestamp)
+                        BedTemperatureHistory.objects.create(PrintJob_id=PrintJob.objects.get(Machine_id=printer_id, State='PRINTING').id, Target=target, Actual=actual, TimeStamp=timestamp)
                     except Exception as e:
                         print(e)
 
                 # If Temperature is tool info
                 elif tool_bed == "tool0":
                     try:
-                        ToolTemperatureHistory.objects.create(PrintJob_id=PrintJob.objects.get(Machine_id=printer_id, State=1).id, Target=target, Actual=actual, TimeStamp=timestamp)
+                        ToolTemperatureHistory.objects.create(PrintJob_id=PrintJob.objects.get(Machine_id=printer_id, State='PRINTING').id, Target=target, Actual=actual, TimeStamp=timestamp)
                     except Exception as e:
                         print(e)
         except Exception as e:
             print(e)
 
     elif event == "plugin_octolapse_movie_done":
-        # remove in production
-        if printer == "chaos":
-            print(printer)
+        try:
+            host = Machine.objects.get(Name=printer).DomainName
+            apikey = Machine.objects.get(Name=printer).ApiKey
+            printjob_id = PrintJob.objects.latest('id').id
+            latest_url = get_latest_timelapse_url(apikey, host)['url']
+            latest_name = get_latest_timelapse_url(apikey, host)['name']
+
+            file = download_from_path(apikey, host, latest_url, latest_name)
+
             try:
-                # Change name in production to be variable based on topic -> printer
-                host = Machine.objects.get(Name="chaos").DomainName
-                apikey = Machine.objects.get(Name="chaos").ApiKey
-                printjob_id = PrintJob.objects.latest('id').id
-                latest_url = get_latest_timelapse_url(apikey, host)['url']
-                latest_name = get_latest_timelapse_url(apikey, host)['name']
-
-                file = download_from_path(apikey, host, latest_url, latest_name)
-
-                try:
-                    PrintMediaFile.objects.get(PrintJob_id=printjob_id, Description='timelapse')
-                except:
-                    PrintMediaFile.objects.create(File=file, Owner_id=1,Description='timelapse', PrintJob_id=printjob_id)
-            except Exception as e:
-                print(e)
+                PrintMediaFile.objects.get(PrintJob_id=printjob_id, Description='timelapse')
+            except:
+                PrintMediaFile.objects.create(File=file, Owner_id=1,Description='timelapse', PrintJob_id=printjob_id)
+        except Exception as e:
+            print(e)
 
 
 

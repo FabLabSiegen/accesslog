@@ -248,7 +248,7 @@ class StartPrintJob(APIView):
         print(response.status_code)
         if response.status_code == 201:
             try:
-                PrintJob.objects.get(Machine_id=request.data['Machine'], State=1)
+                PrintJob.objects.get(Machine_id=request.data['Machine'], State='PRINTING')
                 p_exists = True
             except PrintJob.DoesNotExist:
                 p_exists = False
@@ -259,9 +259,9 @@ class StartPrintJob(APIView):
                 if not p_exists:
                     PrintJob.objects.create(
                         Start=timezone.now(),
-                        End=timezone.now(),
+                        End=None,
                         GCode_id=request.data['GCode'],
-                        State=1, Machine_id=request.data['Machine'],
+                        State='PRINTING', Machine_id=request.data['Machine'],
                         User_id=owner
                     )
                     print("PrintJob created")
