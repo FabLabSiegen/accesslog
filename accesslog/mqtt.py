@@ -26,5 +26,8 @@ client.on_message = on_message
 client.on_disconnect = on_disconnect
 
 client.username_pw_set(username=os.environ.get("MQTT_USER", "mqtt"),password=os.environ.get("MQTT_PASSWORD", "mqtt"))
-
-client.connect(os.environ.get("MQTT_URL", "localhost"), 1883, 60)
+try:
+    client.connect('localhost', 1883, 60)
+except Exception as e:
+    print(e)
+    print("hier")

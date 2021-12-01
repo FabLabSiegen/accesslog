@@ -1,2 +1,5 @@
 from . import mqtt
-mqtt.client.loop_start()
+try:
+    mqtt.client.loop_start()
+except Exception as e:
+    print(e)
