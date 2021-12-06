@@ -15,6 +15,7 @@ The Project is based on Django.
 * [Local development](#local-development)
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
+  * [Testing](#testing)
 * [API Endpoints](#api-endpoints)
   * [Start Print Jobs](#start-print-jobs)
   * [Stop/Cancel Print Jobs](#stopcancel-print-jobs)
@@ -26,6 +27,7 @@ The Project is based on Django.
   * [Print Jobs](#print-jobs)
   * [Print Media Files](#print-media-files)
 * [Future improvement possibilities](#future-improvement-possibilities)
+* [MIT License](#mit-license)
 
 ## Local development
 
@@ -61,7 +63,11 @@ This will make sure the database has all the models to work with
 8. Go to http://localhost:8000/register/ and create an Account
 
 The Api (http://localhost:8000/api/) should now be available to you. In order to access the "Manage Printers"-tab (http://localhost:8000/manage/) you need to access the database directly and change your just created User to `is_staff=true` and `is_superuser=true`
-
+### Testing
+Run tests with the following command:
+```sh
+$ python manage.py test
+```
 ## API Endpoints
 
 ### Start Print Jobs:
@@ -615,3 +621,25 @@ Example successful response _(Logged in UserID:1)_:
   * Increase User Experience (UX)
   * Language localisation
   * Increase overall visibility
+  
+## MIT License
+
+Copyright (c) [year] [fullname]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
