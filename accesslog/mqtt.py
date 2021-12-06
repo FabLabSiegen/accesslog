@@ -30,4 +30,3 @@ try:
     client.connect(os.environ.get("MQTT_URL", "mqtt"), 1883, 60)
 except Exception as e:
     print(e)
-    print("hier")

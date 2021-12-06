@@ -1,9 +1,10 @@
 # accesslog
-Access and Documentation System for the Fab Lab that logs temperature data of ongoing prints and makes data available through an API and give the possibility to control prints
+Access and Documentation System for the [Fab Lab](https://fablab-siegen.de/) that logs temperature data of ongoing prints, 
+makes data available through an API and offers the possibility to control prints. It acts as an interface for printers located in the [Fab Lab](https://fablab-siegen.de/).
 
 * Manage existing Printers under http://localhost:8000/manage/ _(is_staff required)_
 * Register a new Account http://localhost:8000/register/ and Login to create a session http://localhost:8000/login/
-* Access the [REST API](#api-endpoints) in order to ...
+* Access the [REST API](#api-endpoints) in order to
   * start/stop prints
   * get data from the system
   * post data to the system
@@ -49,10 +50,17 @@ $ python manage.py migrate
 This will make sure the database has all the models to work with
 
 4. Go to http://localhost:5000/ and under `Settings > OCTOPRINT > Pluginmanager` install the MQTT Plugin _(by Gina Häußge)_
-5. Run Docker Compose again `docker-compose run --build`
-6. Go to http://localhost:8000/register/ and create an Account
+5. Under `Settings > PLUGINS > MQTT > Broker` set:
+   * Host = `mqtt`
+   * Port = `1883`
+   * Username = `testuser`
+   * Passwort = `testpasswd`
+6. Under `Settings > PLUGINS > MQTT > Topics` set:
+   * Basic topic = `fablab/printers/testprinter/`
+7. Run Docker Compose again `docker-compose run --build`
+8. Go to http://localhost:8000/register/ and create an Account
 
-The Api (http://localhost:8000/api/) should now be available to you. In order to access the "Manage Printers"-tab (http://localhost:8000/manage/) you need to access the database directly and change your just created User to is_staff=true and is_superuser=true
+The Api (http://localhost:8000/api/) should now be available to you. In order to access the "Manage Printers"-tab (http://localhost:8000/manage/) you need to access the database directly and change your just created User to `is_staff=true` and `is_superuser=true`
 
 ## API Endpoints
 
@@ -603,7 +611,7 @@ Example successful response _(Logged in UserID:1)_:
   * Multiple Instances of the paho mqtt client for each Machine
   
 * Improvement to the Front-End
-  * Mobile responsive
+  * Mobile responsiveness
   * Increase User Experience (UX)
   * Language localisation
   * Increase overall visibility
