@@ -294,8 +294,13 @@ class StopPrintJob(APIView):
     def post(self, request, *args, **kwargs):
 
         print(request.data)
-        machine_id = PrintJob.objects.get(id=request.data['PrintJob']).Machine.id
-        owner = PrintJob.objects.get(id=request.data['PrintJob']).User.id
+        
+        try:
+            machine_id = PrintJob.objects.get(id=request.data['PrintJob']).Machine.id
+            owner = PrintJob.objects.get(id=request.data['PrintJob']).User.id
+        except Exception as e:
+            return Response(str(e), status=500)
+        
         if owner == self.request.user.id:
             try:
                 api_key = Machine.objects.get(id=machine_id).ApiKey
