@@ -213,7 +213,7 @@ class PrintMediaFileByPrintJob(APIView):
 
 def post_file(api_key, file, host):
     hed = {'Authorization': 'Bearer ' + api_key}
-    data = {'file':file}
+    data = {"print": "true", "file":file}
 
     url = 'http://'+host+':5000/api/files/local'
     try:
