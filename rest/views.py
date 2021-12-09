@@ -215,7 +215,7 @@ def post_file(api_key, file, host):
     hed = {'Authorization': 'Bearer ' + api_key}
     data = {'file':file}
 
-    url = 'http://'+host+':5000/api/files/sdcard'
+    url = 'http://'+host+':5000/api/files/local'
     try:
         response = requests.post(url,files=data, headers=hed)
 
