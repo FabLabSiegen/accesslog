@@ -215,7 +215,7 @@ def post_file(api_key, file, host):
     hed = {'Authorization': 'Bearer ' + api_key}
     data = {"print": "true", "file":file}
 
-    url = 'http://'+host+':5000/api/files/local'
+    url = 'http://'+host+'/api/files/local'
     try:
         response = requests.post(url,files=data, headers=hed)
 
@@ -273,7 +273,7 @@ def stop_job(api_key, host):
     hed = {'Authorization': 'Bearer ' + api_key, 'content-type': 'application/json'}
     data = {"command": "cancel"}
 
-    url = 'http://'+host+':5000/api/job'
+    url = 'http://'+host+'/api/job'
     try:
         response = requests.post(url,data=json.dumps(data), headers=hed)
         try:
