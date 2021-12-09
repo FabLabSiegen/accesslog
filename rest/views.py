@@ -5,6 +5,8 @@ from rest.serializers import *
 from print.models import *
 from django.db.models import Q
 from rest_framework import viewsets
+import json, requests
+from django.utils import timezone
 import os
 
 class ThreeDimensionalModelViewSet(viewsets.ModelViewSet):
@@ -118,6 +120,27 @@ class SlicingConfigViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         return Response(instance.Config)
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        print(request.data['GCode'])
+        try:
+            SlicingConfig.objects.get(GCode_id=request.data['GCode'])
+            exists = True
+            print(True)
+        except:
+            exists = False
+
+        if exists:
+            response = {'error':'SlicingConfig of GCode already exists'}
+            return Response(response, status=409)
+        elif serializer.is_valid() and str(request.data['Config']) != 'null':
+            self.perform_create(serializer)
+
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response(serializer.errors, status=400)
+
 class PrintJobViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows PrintJobs to be viewed or edited.
@@ -188,6 +211,112 @@ class PrintMediaFileByPrintJob(APIView):
             response = {'message':'There are no Media Files related to that Print Job'}
             return Response(response, status=404)
 
+def post_file(api_key, file, host):
+    hed = {'Authorization': 'Bearer ' + api_key}
+    data = {"print": "true", "file":file}
+
+    url = 'http://'+host+'/api/files/local'
+    try:
+        response = requests.post(url,files=data, headers=hed)
+
+        return Response(json.loads(response.text), status=response.status_code)
+    except requests.exceptions.RequestException as e:
+        response = {'error':str(e)}
+        return Response(response, status=421)
+    except Exception as e:
+        response = {'error':str(e)}
+        print (e)
+        return Response(response, status=500)
+
+
+class StartPrintJob(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = StartPrintJobSerializer
+
+    def post(self, request, *args, **kwargs):
+        p_exists = None
+        owner=self.request.user.id
+
+        try:
+            file = GCode.objects.get(id=request.data['GCode']).File
+            api_key = Machine.objects.get(id=request.data['Machine']).ApiKey
+            host = Machine.objects.get(id=request.data['Machine']).DomainName
+        except Exception as e:
+            return Response(str(e), status=500)
+
+        response = post_file(api_key, file, host)
+        print(response.status_code)
+        if response.status_code == 201:
+            try:
+                PrintJob.objects.get(Machine_id=request.data['Machine'], State='PRINTING')
+                p_exists = True
+            except PrintJob.DoesNotExist:
+                p_exists = False
+            except Exception as e:
+                print(e)
+
+            try:
+                if not p_exists:
+                    PrintJob.objects.create(
+                        Start=timezone.now(),
+                        End=None,
+                        GCode_id=request.data['GCode'],
+                        State='PRINTING', Machine_id=request.data['Machine'],
+                        User_id=owner
+                    )
+                    print("PrintJob created")
+            except Exception as e:
+                print(e)
+        return response
+
+def stop_job(api_key, host):
+    hed = {'Authorization': 'Bearer ' + api_key, 'content-type': 'application/json'}
+    data = {"command": "cancel"}
+
+    url = 'http://'+host+'/api/job'
+    try:
+        response = requests.post(url,data=json.dumps(data), headers=hed)
+        try:
+            r = json.loads(response.text)
+            return Response(r, status=response.status_code)
+        except:
+            return Response(status=response.status_code)
+
+    except requests.exceptions.RequestException as e:
+        response = {'error':str(e)}
+        return Response(response, status=421)
+
+class StopPrintJob(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = StopPrintJobSerializer
+
+
+    def post(self, request, *args, **kwargs):
+
+        print(request.data)
+        
+        try:
+            machine_id = PrintJob.objects.get(id=request.data['PrintJob']).Machine.id
+            owner = PrintJob.objects.get(id=request.data['PrintJob']).User.id
+        except Exception as e:
+            return Response(str(e), status=500)
+        
+        if owner == self.request.user.id:
+            try:
+                api_key = Machine.objects.get(id=machine_id).ApiKey
+                host = Machine.objects.get(id=machine_id).DomainName
+            except Exception as e:
+                return Response(str(e), status=500)
+
+            try:
+                response = stop_job(api_key, host)
+                return response
+            except requests.exceptions.RequestException as e:
+                response = {'error':str(e)}
+                return Response(response, status=421)
+        else:
+            response = {'message':'You are not allowed to stop this PrintJob because you do not own it'}
+            return Response(response, status=403)
 
 
 class UserViewSet(viewsets.ModelViewSet):

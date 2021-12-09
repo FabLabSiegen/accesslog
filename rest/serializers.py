@@ -16,6 +16,7 @@ class GCodeSerializer(serializers.ModelSerializer):
         read_only_fields = ['Size', 'Name', 'FileName', 'Owner']
 
 class SlicingConfigSerializer(serializers.ModelSerializer):
+    Config = serializers.JSONField(required=True, allow_null=False)
     class Meta:
         model = SlicingConfig
         fields = ['Config', 'GCode']
@@ -31,6 +32,19 @@ class PrintMediaFileSerializer(serializers.ModelSerializer):
         model = PrintMediaFile
         fields = ['id','PrintJob','File','Owner']
         read_only_fields = ['Owner']
+
+class StartPrintJobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StartGCode
+        fields = ['id', 'GCode', 'Machine' ,'Owner']
+        read_only_fields = ['Owner']
+
+class StopPrintJobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StopGCode
+        fields = ['id', 'PrintJob', 'Owner']
+        read_only_fields = ['Owner']
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

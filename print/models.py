@@ -29,10 +29,11 @@ class MachineCategory(models.Model):
 
 class Machine(models.Model):
     Category = models.ForeignKey(MachineCategory, on_delete=models.SET_NULL, null=True)
-    Status = models.TextField()
-    Name = models.TextField()
-    HostName = models.TextField()
-    Location = models.TextField()
+    Status = models.CharField(max_length=100)
+    Name = models.CharField(max_length=100)
+    DomainName = models.CharField(max_length=100)
+    Location = models.CharField(max_length=100)
+    ApiKey = models.CharField(max_length=100)
     Description = models.TextField()
     User = models.ManyToManyField(User, through='AssignedUsers')
 
@@ -63,20 +64,26 @@ class GCode(models.Model):
     Uploaded = models.DateTimeField(auto_now_add=True)
     SharedWithUser = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
+
+
 class PrintJob(models.Model):
     User = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user))
     Machine = models.ForeignKey(Machine, on_delete=models.SET_NULL, null=True)
     GCode = models.ForeignKey(GCode, on_delete=models.SET_NULL, null=True)
     Start = models.DateTimeField()
-    End = models.DateTimeField()
-    State = models.IntegerField()
+    End = models.DateTimeField(null=True)
+    State = models.CharField(max_length=100)
 
-class PrintTemperatureHistory(models.Model):
+class BedTemperatureHistory(models.Model):
     PrintJob = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
-    ToolTarget = models.FloatField()
-    ToolActual = models.FloatField()
-    BedTarget = models.FloatField()
-    BedActual = models.FloatField()
+    Target = models.FloatField()
+    Actual = models.FloatField()
+    TimeStamp = models.DateTimeField()
+
+class ToolTemperatureHistory(models.Model):
+    PrintJob = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
+    Target = models.FloatField()
+    Actual = models.FloatField()
     TimeStamp = models.DateTimeField()
 
 class PrintMediaFile(models.Model):
@@ -87,10 +94,19 @@ class PrintMediaFile(models.Model):
 
 class SlicingConfig(models.Model):
     GCode = models.ForeignKey(GCode,on_delete=models.CASCADE)
-    Config = models.JSONField()
+    Config = models.JSONField(null=False)
 
 class Rating(models.Model):
     User = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user))
     PrintJob = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
     Comment = models.TextField(max_length=500)
     Rating = models.IntegerField()
+
+class StartGCode(models.Model):
+    Machine = models.ForeignKey(Machine, on_delete=models.SET_NULL, null=True)
+    GCode = models.ForeignKey(GCode, on_delete=models.SET_NULL, null=True)
+    Owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, related_name='StartGcodeOwner')
+
+class StopGCode(models.Model):
+    PrintJob = models.ForeignKey(PrintJob, on_delete=models.CASCADE)
+    Owner = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, related_name='StopGcodeOwner')
