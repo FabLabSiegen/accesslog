@@ -235,10 +235,10 @@ class StartPrintJob(APIView):
 
     def post(self, request, *args, **kwargs):
         p_exists = None
-        file = GCode.objects.get(id=request.data['GCode']).File
         owner=self.request.user.id
 
         try:
+            file = GCode.objects.get(id=request.data['GCode']).File
             api_key = Machine.objects.get(id=request.data['Machine']).ApiKey
             host = Machine.objects.get(id=request.data['Machine']).DomainName
         except Exception as e:
