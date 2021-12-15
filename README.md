@@ -61,6 +61,7 @@ This will make sure the database has all the models to work with
    * Basic topic = `fablab/printers/testprinter/`
 7. Run Docker Compose again `docker-compose run --build`
 8. Go to http://localhost:8000/register/ and create an Account
+9. Go to https://www.jetbrains.com/pycharm/ and download PyCharm for your required OS.
 
 The Api (http://localhost:8000/api/) should now be available to you. In order to access the "Manage Printers"-tab (http://localhost:8000/manage/) you need to access the database directly and change your just created User to `is_staff=true` and `is_superuser=true`
 ### Testing
