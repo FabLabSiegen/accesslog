@@ -3,20 +3,62 @@ version: "3.9"
 services:
   db:
     image: postgres
-    ports:
-    - "5432:5432"
+    container_name: db
     volumes:
       - ./data/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    networks:
+      - localnet
+  octoprint:
+    image: octoprint/octoprint
+    container_name: octoprint
+    restart: unless-stopped
+    ports:
+      - 5000:5000
+    volumes:
+      - octoprint:/octoprint
+    networks:
+      - localnet
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8000 --noreload
     volumes:
       - .:/code
     ports:
-      - "8000:8000"
+      - 8000:8000
+    env_file:
+      - .env.dev
     depends_on:
       - db
+      - octoprint
+      - mosquitto
+    networks:
+      - localnet
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mqtt
+    restart: always
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    ports:
+      - 1883:1883
+      - 9001:9001
+    networks:
+      - localnet
+volumes:
+  postgres_data:
+  octoprint:
+  mosquitto_data:
+  mosquitto_log:
+
+networks:
+  localnet:
+    driver: bridge
