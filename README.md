@@ -39,7 +39,7 @@ $ python --version
 ```
 3. If you don't have Python installed, install Python 3.9.0 or higher
 ### Installation
-1. Run the Docker Compose file `docker-compose run --build`
+1. Run the command 'docker-compose run web' for the first time. ('docker-compose up --build' should work for the next time).
 2. Go to http://localhost:5000/ and follow the basic setup wizard and create an account
 3. Create a terminal in your 'web'-container and run the following commands:
 
