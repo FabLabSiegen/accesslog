@@ -1,26 +1,27 @@
+import json
 import tempfile
+
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient, RequestsClient
+from rest_framework.test import APIClient, APITestCase, RequestsClient
+
 from print.models import *
-import json
 
 
 def login():
     client = APIClient()
-    user = User.objects.get(username='testuser')
+    user = User.objects.get(username="testuser")
     client.force_authenticate(user=user)
     return client
 
 
 class ThreeDimensionalModelCreateTestCase(APITestCase):
-
     def setUp(self):
         """
         Create Test User to authenticate and add and request test objects
         """
-        User.objects.create_user(username='testuser', id=1)
+        User.objects.create_user(username="testuser", id=1)
 
     def test_login(self):
         """
@@ -36,13 +37,15 @@ class ThreeDimensionalModelCreateTestCase(APITestCase):
         """
         client = login()
         # Test correct input response
-        file = SimpleUploadedFile("file.obj", b"file_content", content_type="application/octet-stream")
-        request = client.post(reverse('ThreeDimensionalModel-list'), {'File': file})
+        file = SimpleUploadedFile(
+            "file.obj", b"file_content", content_type="application/octet-stream"
+        )
+        request = client.post(reverse("ThreeDimensionalModel-list"), {"File": file})
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         # Test if there is actually one file uploaded
         self.assertEqual(ThreeDimensionalModel.objects.count(), 1)
         # Test if uploading user was associated as owner of model
-        self.assertEqual(request.data['Owner'], 1)
+        self.assertEqual(request.data["Owner"], 1)
 
     def test_create_model_stl(self):
         """
@@ -50,13 +53,15 @@ class ThreeDimensionalModelCreateTestCase(APITestCase):
         """
         client = login()
         # Test correct input response
-        file = SimpleUploadedFile("file.stl", b"file_content", content_type="application/octet-stream")
-        request = client.post(reverse('ThreeDimensionalModel-list'), {'File': file})
+        file = SimpleUploadedFile(
+            "file.stl", b"file_content", content_type="application/octet-stream"
+        )
+        request = client.post(reverse("ThreeDimensionalModel-list"), {"File": file})
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         # Test if there is actually one file uploaded
         self.assertEqual(ThreeDimensionalModel.objects.count(), 1)
         # Test if uploading user was associated as owner of model
-        self.assertEqual(request.data['Owner'], 1)
+        self.assertEqual(request.data["Owner"], 1)
 
     def test_create_model_wrong_type(self):
         """
@@ -64,8 +69,10 @@ class ThreeDimensionalModelCreateTestCase(APITestCase):
         """
         client = login()
         # Test incorrect file type input response
-        file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
-        request = client.post(reverse('ThreeDimensionalModel-list'), {'File': file})
+        file = SimpleUploadedFile(
+            "file.jpg", b"file_content", content_type="image/jpeg"
+        )
+        request = client.post(reverse("ThreeDimensionalModel-list"), {"File": file})
         self.assertEqual(request.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     def test_create_model_bad_request(self):
@@ -74,16 +81,16 @@ class ThreeDimensionalModelCreateTestCase(APITestCase):
         """
         client = login()
         # Test null input (bad request)
-        request = client.post(reverse('ThreeDimensionalModel-list'), None)
+        request = client.post(reverse("ThreeDimensionalModel-list"), None)
         self.assertEqual(request.status_code, status.HTTP_400_BAD_REQUEST)
 
-class ThreeDimensionalModelListTestCase(APITestCase):
 
+class ThreeDimensionalModelListTestCase(APITestCase):
     def setUp(self):
         """
         Create Test User to authenticate and add and request test objects
         """
-        User.objects.create_user(username='testuser', id=1)
+        User.objects.create_user(username="testuser", id=1)
 
     def test_list_model_owner(self):
         """
@@ -91,8 +98,8 @@ class ThreeDimensionalModelListTestCase(APITestCase):
         """
         client = login()
         ThreeDimensionalModel.objects.create(Owner_id=1)
-        request = client.get(reverse('ThreeDimensionalModel-list'))
-        entry_count = json.dumps(request.data).count('id')
+        request = client.get(reverse("ThreeDimensionalModel-list"))
+        entry_count = json.dumps(request.data).count("id")
         self.assertEqual(entry_count, 1)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
 
@@ -102,8 +109,8 @@ class ThreeDimensionalModelListTestCase(APITestCase):
         """
         client = login()
         ThreeDimensionalModel.objects.create(SharedWithUser_id=1)
-        request = client.get(reverse('ThreeDimensionalModel-list'))
-        entry_count = json.dumps(request.data).count('id')
+        request = client.get(reverse("ThreeDimensionalModel-list"))
+        entry_count = json.dumps(request.data).count("id")
         self.assertEqual(entry_count, 1)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
 
@@ -113,8 +120,8 @@ class ThreeDimensionalModelListTestCase(APITestCase):
         """
         client = login()
         ThreeDimensionalModel.objects.create(id=1, Owner_id=1)
-        request = client.get(reverse('ThreeDimensionalModel-list')+'?id=1')
-        entry_count = json.dumps(request.data).count('id')
+        request = client.get(reverse("ThreeDimensionalModel-list") + "?id=1")
+        entry_count = json.dumps(request.data).count("id")
         self.assertEqual(entry_count, 1)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
 
@@ -123,19 +130,19 @@ class ThreeDimensionalModelListTestCase(APITestCase):
         Ensure that shared users can request models shared with them by name
         """
         client = login()
-        ThreeDimensionalModel.objects.create(Name='testmodel', Owner_id=1)
-        request = client.get(reverse('ThreeDimensionalModel-list')+'?name=testmodel')
-        entry_count = json.dumps(request.data).count('id')
+        ThreeDimensionalModel.objects.create(Name="testmodel", Owner_id=1)
+        request = client.get(reverse("ThreeDimensionalModel-list") + "?name=testmodel")
+        entry_count = json.dumps(request.data).count("id")
         self.assertEqual(entry_count, 1)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
 
-class GCodeCreateTestCase(APITestCase):
 
+class GCodeCreateTestCase(APITestCase):
     def setUp(self):
         """
         Create Test User to authenticate and add and request test objects
         """
-        User.objects.create_user(username='testuser', id=1)
+        User.objects.create_user(username="testuser", id=1)
 
     def test_create_gcode(self):
         """
@@ -143,18 +150,23 @@ class GCodeCreateTestCase(APITestCase):
         """
         client = login()
         # Test correct input response
-        file = SimpleUploadedFile("file.gcode", b"file_content", content_type="application/octet-stream")
-        request = client.post(reverse('GCode-list'), {
-            'File': file,
-            'UsedFilamentInG': 1233.23,
-            'UsedFilamentInMm': 12.324,
-            'EstimatedPrintingTime': '20:12:20'
-        })
+        file = SimpleUploadedFile(
+            "file.gcode", b"file_content", content_type="application/octet-stream"
+        )
+        request = client.post(
+            reverse("GCode-list"),
+            {
+                "File": file,
+                "UsedFilamentInG": 1233.23,
+                "UsedFilamentInMm": 12.324,
+                "EstimatedPrintingTime": "20:12:20",
+            },
+        )
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         # Test if there is actually one file uploaded
         self.assertEqual(GCode.objects.count(), 1)
         # Test if uploading user was associated as owner of gcode
-        self.assertEqual(request.data['Owner'], 1)
+        self.assertEqual(request.data["Owner"], 1)
 
     def test_create_gcode_wrong_type(self):
         """
@@ -162,12 +174,17 @@ class GCodeCreateTestCase(APITestCase):
         """
         client = login()
         # Test incorrect file type input response
-        file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
-        request = client.post(reverse('GCode-list'), {
-            'File': file,
-            'UsedFilamentInG': 1233.23,
-            'UsedFilamentInMm': 12.324,
-            'EstimatedPrintingTime': '20:12:20'}
+        file = SimpleUploadedFile(
+            "file.jpg", b"file_content", content_type="image/jpeg"
+        )
+        request = client.post(
+            reverse("GCode-list"),
+            {
+                "File": file,
+                "UsedFilamentInG": 1233.23,
+                "UsedFilamentInMm": 12.324,
+                "EstimatedPrintingTime": "20:12:20",
+            },
         )
         self.assertEqual(request.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
@@ -177,16 +194,16 @@ class GCodeCreateTestCase(APITestCase):
         """
         client = login()
         # Test null input (bad request)
-        request = client.post(reverse('GCode-list'), None)
+        request = client.post(reverse("GCode-list"), None)
         self.assertEqual(request.status_code, status.HTTP_400_BAD_REQUEST)
 
-class GCodeListTestCase(APITestCase):
 
+class GCodeListTestCase(APITestCase):
     def setUp(self):
         """
         Create Test User to authenticate and add and request test objects
         """
-        User.objects.create_user(username='testuser', id=1)
+        User.objects.create_user(username="testuser", id=1)
 
     def test_list_gcode_owner(self):
         """
@@ -198,10 +215,10 @@ class GCodeListTestCase(APITestCase):
             Owner_id=1,
             UsedFilamentInG=123.123,
             UsedFilamentInMm=123.123,
-            EstimatedPrintingTime='12:03:00'
+            EstimatedPrintingTime="12:03:00",
         )
-        request = client.get(reverse('GCode-list'))
-        entry_count = json.dumps(request.data).count('id')
+        request = client.get(reverse("GCode-list"))
+        entry_count = json.dumps(request.data).count("id")
         self.assertEqual(entry_count, 1)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
 
@@ -215,10 +232,10 @@ class GCodeListTestCase(APITestCase):
             SharedWithUser_id=1,
             UsedFilamentInG=123.123,
             UsedFilamentInMm=123.123,
-            EstimatedPrintingTime='12:03:00'
+            EstimatedPrintingTime="12:03:00",
         )
-        request = client.get(reverse('GCode-list'))
-        entry_count = json.dumps(request.data).count('id')
+        request = client.get(reverse("GCode-list"))
+        entry_count = json.dumps(request.data).count("id")
         self.assertEqual(entry_count, 1)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
 
@@ -232,10 +249,10 @@ class GCodeListTestCase(APITestCase):
             Owner_id=1,
             UsedFilamentInG=123.123,
             UsedFilamentInMm=123.123,
-            EstimatedPrintingTime='12:03:00'
+            EstimatedPrintingTime="12:03:00",
         )
-        request = client.get(reverse('GCode-list')+'?id=1')
-        entry_count = json.dumps(request.data).count('id')
+        request = client.get(reverse("GCode-list") + "?id=1")
+        entry_count = json.dumps(request.data).count("id")
         self.assertEqual(entry_count, 1)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
 
@@ -249,21 +266,21 @@ class GCodeListTestCase(APITestCase):
             Owner_id=1,
             UsedFilamentInG=123.123,
             UsedFilamentInMm=123.123,
-            EstimatedPrintingTime='12:03:00',
-            Name='testgcode'
+            EstimatedPrintingTime="12:03:00",
+            Name="testgcode",
         )
-        request = client.get(reverse('GCode-list')+'?name=testgcode')
-        entry_count = json.dumps(request.data).count('id')
+        request = client.get(reverse("GCode-list") + "?name=testgcode")
+        entry_count = json.dumps(request.data).count("id")
         self.assertEqual(entry_count, 1)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
 
-class SlicingConfigRetrieveTestCase(APITestCase):
 
+class SlicingConfigRetrieveTestCase(APITestCase):
     def setUp(self):
         """
         Create Test User to authenticate and add and request test objects
         """
-        User.objects.create_user(username='testuser', id=1)
+        User.objects.create_user(username="testuser", id=1)
 
     def test_slicing_config_retrieve(self):
         """
@@ -272,13 +289,9 @@ class SlicingConfigRetrieveTestCase(APITestCase):
         client = login()
         # Create test JSON to be used in SlicingConfig creation
         test_json = {
-            'testjson': {
-                'test1': {
-                    'data': 'Testdata'
-                },
-                'test2': {
-                    'data': 'Testdata'
-                },
+            "testjson": {
+                "test1": {"data": "Testdata"},
+                "test2": {"data": "Testdata"},
             }
         }
         # Create test GCode to be able to create Slicing Config related to GCode
@@ -287,26 +300,23 @@ class SlicingConfigRetrieveTestCase(APITestCase):
             Owner_id=1,
             UsedFilamentInG=123.123,
             UsedFilamentInMm=123.123,
-            EstimatedPrintingTime='12:03:00',
-            Name='testgcode'
+            EstimatedPrintingTime="12:03:00",
+            Name="testgcode",
         )
         # Create test slicing config to retrieve afterwards
-        SlicingConfig.objects.create(
-            Config=test_json,
-            GCode_id=1
-        )
-        request = client.get(reverse('SlicingConfig-list')+'1/')
+        SlicingConfig.objects.create(Config=test_json, GCode_id=1)
+        request = client.get(reverse("SlicingConfig-list") + "1/")
         # Test if response json is the same as we created before
-        self.assertJSONEqual(json.dumps(request.data),json.dumps(test_json))
-        self.assertEqual(request.status_code,status.HTTP_200_OK)
+        self.assertJSONEqual(json.dumps(request.data), json.dumps(test_json))
+        self.assertEqual(request.status_code, status.HTTP_200_OK)
+
 
 class SlicingConfigCreateTestCase(APITestCase):
-
     def setUp(self):
         """
         Create Test User to authenticate and add and request test objects
         """
-        User.objects.create_user(username='testuser', id=1)
+        User.objects.create_user(username="testuser", id=1)
 
     def test_slicing_config_create(self):
         """
@@ -319,34 +329,34 @@ class SlicingConfigCreateTestCase(APITestCase):
             Owner_id=1,
             UsedFilamentInG=123.123,
             UsedFilamentInMm=123.123,
-            EstimatedPrintingTime='12:03:00',
-            Name='testgcode'
+            EstimatedPrintingTime="12:03:00",
+            Name="testgcode",
         )
         # Creating Json for testing
         test_json = {
-            'testjson': {
-                'test1': {
-                    'data': 'Testdata'
-                },
-                'test2': {
-                    'data': 'Testdata'
-                },
+            "testjson": {
+                "test1": {"data": "Testdata"},
+                "test2": {"data": "Testdata"},
             }
         }
         # Creating request to upload Slicing config and relate it to an existing GCode
-        request = client.post(reverse('SlicingConfig-list'), {'Config':test_json, 'GCode':1}, format='json')
-        entry_count = json.dumps(request.data).count('Config')
+        request = client.post(
+            reverse("SlicingConfig-list"),
+            {"Config": test_json, "GCode": 1},
+            format="json",
+        )
+        entry_count = json.dumps(request.data).count("Config")
         # Test if entry was created
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         self.assertEqual(entry_count, 1)
 
-class PrintJobListTestCase(APITestCase):
 
+class PrintJobListTestCase(APITestCase):
     def setUp(self):
         """
         Create Test User to authenticate and add and request test objects
         """
-        User.objects.create_user(username='testuser', id=1)
+        User.objects.create_user(username="testuser", id=1)
 
     def test_print_job_list(self):
         """
@@ -354,13 +364,10 @@ class PrintJobListTestCase(APITestCase):
         """
         client = login()
         PrintJob.objects.create(
-            Start="2021-10-21T13:39:00Z",
-            End="2021-10-21T13:39:00Z",
-            State=1,
-            User_id=1
+            Start="2021-10-21T13:39:00Z", End="2021-10-21T13:39:00Z", State=1, User_id=1
         )
-        request = client.get(reverse('PrintJob-list'))
-        entry_count = json.dumps(request.data).count('id')
+        request = client.get(reverse("PrintJob-list"))
+        entry_count = json.dumps(request.data).count("id")
         self.assertEqual(entry_count, 1)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
 
@@ -370,47 +377,52 @@ class PrintJobListTestCase(APITestCase):
         """
         client = login()
         # Create User that is not logged in
-        User.objects.create_user(username='other_user', id=2)
+        User.objects.create_user(username="other_user", id=2)
         # Create PrintJob of not logged in User
         PrintJob.objects.create(
-            Start="2021-10-21T13:39:00Z",
-            End="2021-10-21T13:39:00Z",
-            State=1,
-            User_id=2
+            Start="2021-10-21T13:39:00Z", End="2021-10-21T13:39:00Z", State=1, User_id=2
         )
-        request = client.get(reverse('PrintJob-list'))
-        entry_count = json.dumps(request.data).count('id')
+        request = client.get(reverse("PrintJob-list"))
+        entry_count = json.dumps(request.data).count("id")
         # Test if logged in User does not see PrintJobs of not logged in User
         self.assertEqual(entry_count, 0)
 
-class PrintJobCreateTestCase(APITestCase):
 
+class PrintJobCreateTestCase(APITestCase):
     def setUp(self):
         """
         Create Test User to authenticate and add and request test objects
         """
-        User.objects.create_user(username='testuser', id=1)
+        User.objects.create_user(username="testuser", id=1)
 
     def test_print_job_create(self):
         """
         Ensure that users can create PrintJobs and own them afterwards
         """
         client = login()
-        request = client.post(reverse('PrintJob-list'), {'Start':'2021-10-21T13:39:00Z', 'End':'2021-10-21T13:39:00Z', 'State':1}, format='json')
-        entry_count = json.dumps(request.data).count('id')
+        request = client.post(
+            reverse("PrintJob-list"),
+            {
+                "Start": "2021-10-21T13:39:00Z",
+                "End": "2021-10-21T13:39:00Z",
+                "State": 1,
+            },
+            format="json",
+        )
+        entry_count = json.dumps(request.data).count("id")
         # Test if entry was created
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         self.assertEqual(entry_count, 1)
         # Test if created PrintJob is related to creating user
-        self.assertEqual(request.data['User'], 1)
+        self.assertEqual(request.data["User"], 1)
+
 
 class PrintJobRetrieveTestCase(APITestCase):
-
     def setUp(self):
         """
         Create Test User to authenticate and add and request test objects
         """
-        User.objects.create_user(username='testuser', id=1)
+        User.objects.create_user(username="testuser", id=1)
 
     def test_print_job_retrieve(self):
         """
@@ -422,22 +434,21 @@ class PrintJobRetrieveTestCase(APITestCase):
             Start="2021-10-21T13:39:00Z",
             End="2021-10-21T13:39:00Z",
             State=1,
-            User_id=1
+            User_id=1,
         )
-        request = client.get(reverse('PrintJob-list')+'1/')
-        entry_count = json.dumps(request.data).count('id')
+        request = client.get(reverse("PrintJob-list") + "1/")
+        entry_count = json.dumps(request.data).count("id")
         self.assertEqual(entry_count, 1)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
 
 
 class PrintMediaFileCreateTestCase(APITestCase):
-
     def setUp(self):
         """
         Create Test User to authenticate and add and request test objects
         """
-        User.objects.create_user(username='testuser', id=1)
-        User.objects.create_user(username='testuser2', id=2)
+        User.objects.create_user(username="testuser", id=1)
+        User.objects.create_user(username="testuser2", id=2)
 
     def test_media_file_create(self):
         """
@@ -449,11 +460,15 @@ class PrintMediaFileCreateTestCase(APITestCase):
             Start="2021-10-21T13:39:00Z",
             End="2021-10-21T13:39:00Z",
             State=1,
-            User_id=1
+            User_id=1,
         )
-        file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
-        request = client.post(reverse('PrintMediaFile-list'), {'PrintJob':1, 'File':file})
-        entry_count = json.dumps(request.data).count('id')
+        file = SimpleUploadedFile(
+            "file.jpg", b"file_content", content_type="image/jpeg"
+        )
+        request = client.post(
+            reverse("PrintMediaFile-list"), {"PrintJob": 1, "File": file}
+        )
+        entry_count = json.dumps(request.data).count("id")
         # Test if entry was created
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
         self.assertEqual(entry_count, 1)
@@ -468,45 +483,46 @@ class PrintMediaFileCreateTestCase(APITestCase):
             Start="2021-10-21T13:39:00Z",
             End="2021-10-21T13:39:00Z",
             State=1,
-            User_id=2
+            User_id=2,
         )
-        file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
-        request = client.post(reverse('PrintMediaFile-list'), {'PrintJob':1, 'File':file})
-        entry_count = json.dumps(request.data).count('id')
+        file = SimpleUploadedFile(
+            "file.jpg", b"file_content", content_type="image/jpeg"
+        )
+        request = client.post(
+            reverse("PrintMediaFile-list"), {"PrintJob": 1, "File": file}
+        )
+        entry_count = json.dumps(request.data).count("id")
         # Test if entry was created
         self.assertEqual(request.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(entry_count, 0)
 
-class PrintMediaFileRetrieveTestCase(APITestCase):
 
+class PrintMediaFileRetrieveTestCase(APITestCase):
     def setUp(self):
         """
         Create Test User to authenticate and add and request test objects
         """
-        User.objects.create_user(username='testuser', id=1)
-        User.objects.create_user(username='testuser2', id=2)
+        User.objects.create_user(username="testuser", id=1)
+        User.objects.create_user(username="testuser2", id=2)
 
     def test_media_file_retrieve(self):
         """
         Ensure that users can retrieve Media Files they own
         """
         client = login()
-        file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
+        file = SimpleUploadedFile(
+            "file.jpg", b"file_content", content_type="image/jpeg"
+        )
         PrintJob.objects.create(
             id=1,
             Start="2021-10-21T13:39:00Z",
             End="2021-10-21T13:39:00Z",
             State=1,
-            User_id=1
+            User_id=1,
         )
-        PrintMediaFile.objects.create(
-            id=1,
-            File=file,
-            PrintJob_id=1,
-            Owner_id=1
-        )
-        request = client.get(reverse('PrintMediaFile-list')+'1/')
-        entry_count = json.dumps(request.data).count('id')
+        PrintMediaFile.objects.create(id=1, File=file, PrintJob_id=1, Owner_id=1)
+        request = client.get(reverse("PrintMediaFile-list") + "1/")
+        entry_count = json.dumps(request.data).count("id")
         self.assertEqual(entry_count, 1)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
 
@@ -515,60 +531,49 @@ class PrintMediaFileRetrieveTestCase(APITestCase):
         Ensure that users cannot retrieve Media Files they do not own
         """
         client = login()
-        file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
+        file = SimpleUploadedFile(
+            "file.jpg", b"file_content", content_type="image/jpeg"
+        )
         PrintJob.objects.create(
             id=1,
             Start="2021-10-21T13:39:00Z",
             End="2021-10-21T13:39:00Z",
             State=1,
-            User_id=2
+            User_id=2,
         )
-        PrintMediaFile.objects.create(
-            id=1,
-            File=file,
-            PrintJob_id=1,
-            Owner_id=2
-        )
-        request = client.get(reverse('PrintMediaFile-list')+'1/')
-        entry_count = json.dumps(request.data).count('id')
+        PrintMediaFile.objects.create(id=1, File=file, PrintJob_id=1, Owner_id=2)
+        request = client.get(reverse("PrintMediaFile-list") + "1/")
+        entry_count = json.dumps(request.data).count("id")
         self.assertEqual(entry_count, 0)
         self.assertEqual(request.status_code, status.HTTP_403_FORBIDDEN)
 
-class PrintMediaFileByPrintJobTestCase(APITestCase):
 
+class PrintMediaFileByPrintJobTestCase(APITestCase):
     def setUp(self):
         """
         Create Test User to authenticate and add and request test objects
         """
-        User.objects.create_user(username='testuser', id=1)
+        User.objects.create_user(username="testuser", id=1)
 
     def test_media_file_list_by_print_job(self):
         """
         Ensure that users can retrieve Media Files providing Print Job ID
         """
         client = login()
-        file = SimpleUploadedFile("file.jpg", b"file_content", content_type="image/jpeg")
+        file = SimpleUploadedFile(
+            "file.jpg", b"file_content", content_type="image/jpeg"
+        )
         PrintJob.objects.create(
             id=1,
             Start="2021-10-21T13:39:00Z",
             End="2021-10-21T13:39:00Z",
             State=1,
-            User_id=1
+            User_id=1,
         )
-        PrintMediaFile.objects.create(
-            id=1,
-            File=file,
-            PrintJob_id=1,
-            Owner_id=1
-        )
-        PrintMediaFile.objects.create(
-            id=2,
-            File=file,
-            PrintJob_id=1,
-            Owner_id=1
-        )
-        request = client.get(reverse('MediaFilesByPrintJob-get', args=[1]))
-        entry_count = json.dumps(request.data).count('id')
+        PrintMediaFile.objects.create(id=1, File=file, PrintJob_id=1, Owner_id=1)
+        PrintMediaFile.objects.create(id=2, File=file, PrintJob_id=1, Owner_id=1)
+        request = client.get(reverse("MediaFilesByPrintJob-get", args=[1]))
+        entry_count = json.dumps(request.data).count("id")
         self.assertEqual(entry_count, 2)
         self.assertEqual(request.status_code, status.HTTP_200_OK)
 
@@ -577,7 +582,7 @@ class PrintMediaFileByPrintJobTestCase(APITestCase):
         Ensure that users get a Not Found error when there is no Media File connected to that Print Job
         """
         client = login()
-        request = client.get(reverse('MediaFilesByPrintJob-get', args=[1]))
-        entry_count = json.dumps(request.data).count('id')
+        request = client.get(reverse("MediaFilesByPrintJob-get", args=[1]))
+        entry_count = json.dumps(request.data).count("id")
         self.assertEqual(entry_count, 0)
         self.assertEqual(request.status_code, status.HTTP_404_NOT_FOUND)

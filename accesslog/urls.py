@@ -14,34 +14,41 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.contrib import admin
-from django.urls import path, include
-from rest_framework import routers
-from utilities import views as v
-from rest import views as r
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
+from rest_framework import routers
 
-#rest api
+from rest import views as r
+from utilities import views as v
+
+# rest api
 router = routers.DefaultRouter()
-router.register(r'users', r.UserViewSet)
-router.register(r'groups', r.GroupViewSet)
-router.register(r'models', r.ThreeDimensionalModelViewSet, basename="ThreeDimensionalModel")
-router.register(r'gcode', r.GCodeViewSet, basename="GCode")
-router.register(r'slicingconfig', r.SlicingConfigViewSet, basename="SlicingConfig")
-router.register(r'printjob', r.PrintJobViewSet, basename="PrintJob")
-router.register(r'mediafile', r.PrintMediaFileViewSet, basename="PrintMediaFile")
+router.register(r"users", r.UserViewSet)
+router.register(r"groups", r.GroupViewSet)
+router.register(
+    r"models", r.ThreeDimensionalModelViewSet, basename="ThreeDimensionalModel"
+)
+router.register(r"gcode", r.GCodeViewSet, basename="GCode")
+router.register(r"slicingconfig", r.SlicingConfigViewSet, basename="SlicingConfig")
+router.register(r"printjob", r.PrintJobViewSet, basename="PrintJob")
+router.register(r"mediafile", r.PrintMediaFileViewSet, basename="PrintMediaFile")
 
-#url routing
+# url routing
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('register/', v.register, name="utilities"),
-    path('manage/', v.MachineListView.as_view(), name="Machine-List"),
-    path('', include('utilities.urls')),
-    path('', include("django.contrib.auth.urls")),
-    path('api/', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('api/mediafiles/<int:pk>/', r.PrintMediaFileByPrintJob.as_view() , name="MediaFilesByPrintJob-get"),
-    path('api/print/', r.StartPrintJob.as_view() , name="StartPrintJob-post"),
-    path('api/stopprint/', r.StopPrintJob.as_view() , name="StopPrintJob-post"),
+    path("admin/", admin.site.urls),
+    path("register/", v.register, name="utilities"),
+    path("manage/", v.MachineListView.as_view(), name="Machine-List"),
+    path("", include("utilities.urls")),
+    path("", include("django.contrib.auth.urls")),
+    path("api/", include(router.urls)),
+    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+    path(
+        "api/mediafiles/<int:pk>/",
+        r.PrintMediaFileByPrintJob.as_view(),
+        name="MediaFilesByPrintJob-get",
+    ),
+    path("api/print/", r.StartPrintJob.as_view(), name="StartPrintJob-post"),
+    path("api/stopprint/", r.StopPrintJob.as_view(), name="StopPrintJob-post"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
